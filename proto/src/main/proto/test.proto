@@ -1,0 +1,21 @@
+syntax = "proto3";
+option java_package = "ace.game.vanta.proto";
+import "options.proto";
+
+message ReqTestMessage {
+
+  option (msgId) = 10001;
+
+  int32 id = 1;
+
+  string name = 2;
+
+}
+
+message ResTestMessage {
+
+  option (msgId) = 10002;
+
+  bool result = 1;
+
+}
