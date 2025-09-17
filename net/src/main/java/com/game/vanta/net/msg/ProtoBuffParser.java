@@ -20,6 +20,9 @@ public class ProtoBuffParser implements IGameParser<Message> {
     private static final Map<Class<? extends Message>, Integer> messageToMsgId = new HashMap<>();
 
     public void register(int id, Class<? extends Message> messageClazz, Parser<? extends Message> parser) {
+        if (parserMap.containsKey(id)) {
+            throw new IllegalArgumentException("Message ID already registered: " + id);
+        }
         parserMap.put(id, parser);
         messageToMsgId.put(messageClazz, id);
     }

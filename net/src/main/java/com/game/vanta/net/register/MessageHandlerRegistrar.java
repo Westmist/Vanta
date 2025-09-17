@@ -101,8 +101,11 @@ public class MessageHandlerRegistrar implements SmartInitializingSingleton,
                         MethodHandles.Lookup lookup = MethodHandles.lookup();
                         MethodHandle mh = lookup.unreflect(method).bindTo(bean);
                         // 接收器方法绑定 ContextHandle
-                        IContextHandle contextHandle = mh::invoke;
-
+                        IContextHandle contextHandle = method.getReturnType() == void.class ?
+                                (ctx, req) -> {
+                                    mh.invoke(ctx, req);
+                                    return null;
+                                } : mh::invoke;
                         // 注册方法接收器 IContextHandle
                         messagePool.register(msgId, contextHandle);
                         log.info("Registering handler, msgId: {}, className : {}, Method: {}", msgId, clazz.getName(), method.getName());
@@ -154,8 +157,9 @@ public class MessageHandlerRegistrar implements SmartInitializingSingleton,
             return false;
         }
 
-        // 返回值必须和第二个参数类型兼容
-        if (!defaultMessageClazz.isAssignableFrom(method.getReturnType())) {
+        // 返回值必须和第二个参数类型兼容或者是 void
+        if (!defaultMessageClazz.isAssignableFrom(method.getReturnType())
+                && method.getReturnType() != void.class) {
             return false;
         }
 
