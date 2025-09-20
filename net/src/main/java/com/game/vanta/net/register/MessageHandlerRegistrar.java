@@ -98,6 +98,7 @@ public class MessageHandlerRegistrar implements SmartInitializingSingleton,
                         int msgId = iGameParser.messageId(messageClazz);
                         log.info("Registered message: {} with msgId: {}", messageClazz.getName(), msgId);
 
+                        method.setAccessible(true);
                         MethodHandles.Lookup lookup = MethodHandles.lookup();
                         MethodHandle mh = lookup.unreflect(method).bindTo(bean);
                         // 接收器方法绑定 ContextHandle

@@ -72,7 +72,7 @@ public class ProtoBuffParser implements IGameParser<Message> {
             for (Map.Entry<Descriptors.FieldDescriptor, Object> entry : allFields.entrySet()) {
                 Descriptors.FieldDescriptor fd = entry.getKey();
                 Object value = entry.getValue();
-                // 判断是不是我们关心的 msgid 扩展
+                // 判断是不是我们关心的 msgId 扩展
                 if (fd.isExtension() && MSG_ID_OPTION.equals(fd.getName()) && value instanceof Integer) {
                     return (Integer) value;
                 }
