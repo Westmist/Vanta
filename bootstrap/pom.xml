@@ -29,7 +29,7 @@
 
         <dependency>
             <groupId>com.game.vanta</groupId>
-            <artifactId>net</artifactId>
+            <artifactId>network-spring-boot-starter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

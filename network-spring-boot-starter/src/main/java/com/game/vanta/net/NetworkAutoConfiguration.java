@@ -7,6 +7,8 @@ import com.game.vanta.net.msg.IGameParser;
 import com.game.vanta.net.msg.IMessagePool;
 import com.game.vanta.net.msg.ProtoBuffGameMessagePool;
 import com.game.vanta.net.msg.ProtoBuffParser;
+import com.game.vanta.net.netty.NettyProperties;
+import com.game.vanta.net.netty.NettyServer;
 import com.game.vanta.net.register.MessageHandlerRegistrar;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -17,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-@EnableConfigurationProperties(NettyProperties.class)
-public class NettyAutoConfiguration {
+@EnableConfigurationProperties({NettyProperties.class, NetworkProperties.class})
+public class NetworkAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(IGameParser.class)
@@ -46,8 +48,12 @@ public class NettyAutoConfiguration {
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    public NettyServer nettyServer(NettyProperties properties, ChannelInitializerProvider initializerProvider) {
-        return new NettyServer(properties, initializerProvider);
+    @ConditionalOnMissingBean(INetworkServer.class)
+    public NettyServer nettyServer(
+            NetworkProperties networkProperties,
+            NettyProperties nettyProperties,
+            ChannelInitializerProvider initializerProvider) {
+        return new NettyServer(networkProperties, nettyProperties, initializerProvider);
     }
 
 }

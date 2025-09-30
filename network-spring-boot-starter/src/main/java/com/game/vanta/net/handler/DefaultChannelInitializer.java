@@ -1,6 +1,6 @@
 package com.game.vanta.net.handler;
 
-import com.game.vanta.net.NettyProperties;
+import com.game.vanta.net.netty.NettyProperties;
 import com.game.vanta.net.msg.IMessagePool;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

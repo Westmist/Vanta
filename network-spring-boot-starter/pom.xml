@@ -8,7 +8,7 @@
         <artifactId>vanta</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>net</artifactId>
+    <artifactId>network-spring-boot-starter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>net</name>
     <description>net</description>
@@ -25,6 +25,11 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
     </dependencies>

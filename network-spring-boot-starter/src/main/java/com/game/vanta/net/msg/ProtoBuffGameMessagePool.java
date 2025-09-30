@@ -39,7 +39,19 @@ public class ProtoBuffGameMessagePool implements IMessagePool<Message> {
 
     @Override
     public void register(int msgId, IContextHandle<? extends GameActorContext, Message> contextHandle) {
+        if (handlerPool.containsKey(msgId)) {
+            throw new IllegalArgumentException("Handler already registered for message ID: " + msgId);
+        }
         handlerPool.put(msgId, contextHandle);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public IContextHandle<? extends GameActorContext, Message> getHandler(Message message) {
+        IGameParser<Message> parser = messageParser();
+        Class<Message> clazz = (Class<Message>) message.getClass();
+        int messageId = parser.messageId(clazz);
+        return handlerPool.get(messageId);
     }
 
 }

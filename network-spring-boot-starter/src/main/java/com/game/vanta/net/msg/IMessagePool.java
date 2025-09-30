@@ -15,4 +15,6 @@ public interface IMessagePool<M> {
 
     void register(int msgId, IContextHandle<? extends GameActorContext, M> contextHandle);
 
+    IContextHandle<? extends GameActorContext, M> getHandler(M message);
+
 }

@@ -1,5 +1,7 @@
-package com.game.vanta.net;
+package com.game.vanta.net.netty;
 
+import com.game.vanta.net.INetworkServer;
+import com.game.vanta.net.NetworkProperties;
 import com.game.vanta.net.handler.ChannelInitializerProvider;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -10,11 +12,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NettyServer {
+public class NettyServer implements INetworkServer {
 
     private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
 
-    private final NettyProperties properties;
+    private final NetworkProperties networkProperties;
+
+    private final NettyProperties nettyProperties;
 
     private final ChannelInitializerProvider initializerProvider;
 
@@ -24,9 +28,11 @@ public class NettyServer {
 
     private EventLoopGroup workerGroup;
 
-    public NettyServer(NettyProperties properties,
+    public NettyServer(NetworkProperties networkProperties,
+                       NettyProperties nettyProperties,
                        ChannelInitializerProvider initializerProvider) {
-        this.properties = properties;
+        this.networkProperties = networkProperties;
+        this.nettyProperties = nettyProperties;
         this.initializerProvider = initializerProvider;
     }
 
@@ -35,8 +41,8 @@ public class NettyServer {
     }
 
     public void start() throws InterruptedException {
-        bossGroup = new NioEventLoopGroup(properties.getBossThreads());
-        workerGroup = new NioEventLoopGroup(properties.getWorkerThreads());
+        bossGroup = new NioEventLoopGroup(nettyProperties.getBossThreads());
+        workerGroup = new NioEventLoopGroup(nettyProperties.getWorkerThreads());
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
@@ -46,14 +52,14 @@ public class NettyServer {
                     .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, writeBufferWaterMark());
 
-            ChannelInitializer<SocketChannel> initializer = initializerProvider.buildInitializer(properties);
+            ChannelInitializer<SocketChannel> initializer = initializerProvider.buildInitializer(nettyProperties);
             bootstrap.childHandler(initializer);
 
-            ChannelFuture channelFuture = bootstrap.bind(properties.getPort()).sync();
+            ChannelFuture channelFuture = bootstrap.bind(networkProperties.getPort()).sync();
             this.serverChannel = channelFuture.channel();
-            log.info("Netty started at port {}", properties.getPort());
+            log.info("Netty started at port {}", networkProperties.getPort());
         } catch (Exception e) {
-            log.error("Netty server start failed on port {}", properties.getPort(), e);
+            log.error("Netty server start failed on port {}", networkProperties.getPort(), e);
             stop();
             throw e;
         }

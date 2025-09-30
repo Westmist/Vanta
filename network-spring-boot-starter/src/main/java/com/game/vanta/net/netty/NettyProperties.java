@@ -1,13 +1,11 @@
-package com.game.vanta.net;
+package com.game.vanta.net.netty;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "netty")
+@ConfigurationProperties(prefix = "network.netty")
 public class NettyProperties {
 
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
-
-    private int port = 9100;
 
     private int bossThreads = Math.max(1, AVAILABLE_PROCESSORS / 2);
 
@@ -18,14 +16,6 @@ public class NettyProperties {
     private long writerIdleTime;
 
     private long allIdleTime;
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
 
     public int getBossThreads() {
         return bossThreads;

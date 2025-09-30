@@ -5,7 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnableMessageHandlerScan(basePackages = "com.game.vanta.bootstrap.handler")
+@EnableMessageHandlerScan(
+        handlerPackages = "com.game.vanta.bootstrap.handler",
+        messagePackages = "ace.game.vanta.proto")
 public class BootstrapApplication {
 
     public static void main(String[] args) {

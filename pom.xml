@@ -81,7 +81,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>net</module>
+        <module>network-spring-boot-starter</module>
         <module>bootstrap</module>
         <module>persistent</module>
         <module>proto</module>
