@@ -84,7 +84,8 @@
         <module>network-spring-boot-starter</module>
         <module>bootstrap</module>
         <module>persistent</module>
-        <module>proto</module>
+        <module>persistent-consumer</module>
+        <module>proto-message</module>
     </modules>
 
     <build>

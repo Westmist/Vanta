@@ -1,7 +1,10 @@
 package com.game.vanta.net.handler;
 
-import com.game.vanta.net.netty.NettyProperties;
+
 import com.game.vanta.net.msg.IMessagePool;
+import com.game.vanta.net.netty.BusinessHandlerProvider;
+import com.game.vanta.net.netty.NettyProperties;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -11,18 +14,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 public class DefaultChannelInitializer implements ChannelInitializerProvider {
 
     private final IMessagePool<?> messagePool;
 
-    private final List<IBusinessChannelHandler> businessHandlers;
+    private final BusinessHandlerProvider handlerProvider;
 
     public DefaultChannelInitializer(IMessagePool<?> messagePool,
-                                     ObjectProvider<List<IBusinessChannelHandler>> businessHandlers) {
+                                     BusinessHandlerProvider handlerProvider) {
         Objects.requireNonNull(messagePool, "Null messagePool not permitted");
         this.messagePool = messagePool;
-        this.businessHandlers = businessHandlers.getIfAvailable(ArrayList::new);
+        this.handlerProvider = handlerProvider;
     }
 
     @Override
@@ -38,9 +42,10 @@ public class DefaultChannelInitializer implements ChannelInitializerProvider {
                 ch.pipeline().addLast(messagePool().encoder());
 
                 // 调用业务自定义 handlers
-                for (IBusinessChannelHandler handler : channelHandlerList()) {
-                    handler.addHandlers(ch.pipeline());
+                for (Supplier<ChannelHandler> supplier : handlerProvider().businessHandlers()) {
+                    ch.pipeline().addLast(supplier.get());
                 }
+
             }
         };
     }
@@ -51,9 +56,8 @@ public class DefaultChannelInitializer implements ChannelInitializerProvider {
     }
 
     @Override
-    public List<IBusinessChannelHandler> channelHandlerList() {
-        return businessHandlers;
+    public BusinessHandlerProvider handlerProvider() {
+        return handlerProvider;
     }
-
 
 }

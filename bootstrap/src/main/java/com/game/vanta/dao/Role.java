@@ -1,6 +1,5 @@
-package com.game.vanta.bootstrap.handler;
+package com.game.vanta.dao;
 
-import com.game.vanta.net.register.GameActorContext;
 import com.game.vanta.persistent.dao.IRolePersistent;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,7 +9,7 @@ import java.time.Duration;
 
 @Repository
 @Document(collection = "role")
-public class Role implements IRolePersistent, GameActorContext {
+public class Role implements IRolePersistent {
     /**
      * 角色id
      */

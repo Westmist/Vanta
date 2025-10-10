@@ -35,7 +35,7 @@
 
         <dependency>
             <groupId>com.game.vanta</groupId>
-            <artifactId>proto</artifactId>
+            <artifactId>proto-message</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
@@ -53,6 +53,18 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <!-- ✅ 添加 Surefire 插件，给测试 JVM 加上 Mockito agent -->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-surefire-plugin</artifactId>-->
+<!--&lt;!&ndash;                <version>3.2.5</version> &lt;!&ndash; 建议使用 3.0+ 版本 &ndash;&gt;&ndash;&gt;-->
+<!--                <configuration>-->
+<!--                    <argLine>-->
+<!--                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar-->
+<!--                    </argLine>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 

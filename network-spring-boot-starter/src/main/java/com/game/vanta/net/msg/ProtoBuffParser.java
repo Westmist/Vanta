@@ -1,7 +1,6 @@
 package com.game.vanta.net.msg;
 
 
-import com.game.vanta.net.netty.NettyServer;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;

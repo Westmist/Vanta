@@ -15,3 +15,5 @@ rocketmq:
     send-message-timeout: 3000
 network:
   port: 9201
+persistent:
+  topic: persistent-topic

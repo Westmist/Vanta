@@ -6,9 +6,9 @@ public interface IPersistentService {
 
     <T extends IPersistent> T find(Class<T> clazz, String id);
 
-    <T extends IPersistent> T updateAsync(T data);
+    <T extends IPersistent> void upsertAsync(T data);
 
-    <T extends IPersistent> T saveNow(T data);
+    <T extends IPersistent> void upsertNow(T data);
 
     <T extends IPersistent> void remove(T data);
 

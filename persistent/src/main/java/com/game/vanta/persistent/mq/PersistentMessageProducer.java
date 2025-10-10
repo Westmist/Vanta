@@ -1,12 +1,14 @@
 package com.game.vanta.persistent.mq;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.game.vanta.persistent.PersistentPool;
+import com.game.vanta.persistent.config.PersistentProperties;
 import com.game.vanta.persistent.dao.IPersistent;
+import org.apache.rocketmq.client.producer.SendCallback;
+import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
@@ -20,39 +22,44 @@ public class PersistentMessageProducer {
 
     private final RocketMQTemplate rocketMQTemplate;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final PersistentProperties persistentProperties;
+
+    private final SendCallback persistentMqSendCallback;
 
     public PersistentMessageProducer(
             PersistentPool persistentPool,
-            RocketMQTemplate rocketMQTemplate) {
+            RocketMQTemplate rocketMQTemplate,
+            PersistentProperties persistentProperties,
+            SendCallback persistentMqSendCallback) {
         this.persistentPool = persistentPool;
         this.rocketMQTemplate = rocketMQTemplate;
+        this.persistentProperties = persistentProperties;
+        this.persistentMqSendCallback = persistentMqSendCallback;
     }
 
-    /**
-     * 发送持久化消息
-     */
-    public <T extends IPersistent> void sendMqPost(T data) {
+    public <T extends IPersistent> SendResult syncSendMqNotice(T data) {
+        Message<PersistentMqNotice> mqMessage = createMqMessage(data);
+        return rocketMQTemplate
+                .syncSend(persistentProperties.getTopic(), mqMessage);
+    }
+
+    public <T extends IPersistent> void asyncSendMqNotice(T data) {
+        Message<PersistentMqNotice> mqMessage = createMqMessage(data);
+        rocketMQTemplate
+                .asyncSend(persistentProperties.getTopic(),
+                        mqMessage,
+                        persistentMqSendCallback);
+    }
+
+    public <T extends IPersistent> Message<PersistentMqNotice> createMqMessage(T data) {
         String collectName = persistentPool.findCollectName(data.getClass());
-        PersistentMqPost mqPost = new PersistentMqPost();
-        mqPost.setCollectName(collectName);
-        mqPost.setId(data.getId());
-        // TODO: 后续考虑扩展 payload 字段
-
-        String body;
-        try {
-            body = objectMapper.writeValueAsString(mqPost);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        log.debug("Sending persistent message: {}", body);
-
-        rocketMQTemplate.syncSend(
-                "persistent-topic",
-                MessageBuilder.withPayload(body)
-                        .setHeader("KEYS", data.getId())
-                        .build()
-        );
+        PersistentMqNotice mqNotice = new PersistentMqNotice();
+        mqNotice.setCollectName(collectName);
+        mqNotice.setId(data.getId());
+        return MessageBuilder
+                .withPayload(mqNotice)
+                .setHeader("KEYS", data.getId())
+                .build();
     }
 
 }

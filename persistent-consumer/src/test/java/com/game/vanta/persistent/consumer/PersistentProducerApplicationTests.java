@@ -1,10 +1,10 @@
-package com.game.vanta.bootstrap;
+package com.game.vanta.persistent.consumer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BootstrapApplicationTests {
+class PersistentProducerApplicationTests {
 
     @Test
     void contextLoads() {

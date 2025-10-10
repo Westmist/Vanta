@@ -1,9 +1,8 @@
-package com.game.vanta.persistent.mq;
+package com.game.vanta.persistent.consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.game.vanta.persistent.PersistentPool;
 import com.game.vanta.persistent.dao.IPersistent;
+import com.game.vanta.persistent.mq.PersistentMqNotice;
 import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -15,15 +14,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RocketMQMessageListener(
-        topic = "persistent-topic",
-        consumerGroup = "persistent-consumer-group",
+        topic = "${persistent.topic:persistent-topic}",
+        consumerGroup = "${rocketmq.consumer.group}",
         messageModel = MessageModel.CLUSTERING
 )
-public class PersistentMessageConsumer implements RocketMQListener<String> {
+public class PersistentMessageConsumer implements RocketMQListener<PersistentMqNotice> {
 
     private static final Logger log = LoggerFactory.getLogger(PersistentMessageConsumer.class);
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final PersistentPool persistentPool;
 
@@ -41,30 +38,19 @@ public class PersistentMessageConsumer implements RocketMQListener<String> {
     }
 
     @Override
-    public void onMessage(String message) {
-        log.info("Received persistent message: {}", message);
-        PersistentMqPost mqPost;
-        // 1. 反序列化 MQ 消息
-        try {
-            mqPost = objectMapper.readValue(message, PersistentMqPost.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        String collectName = mqPost.getCollectName();
-        String id = mqPost.getId();
-
-        // 2. 根据 collection 找 class
+    public void onMessage(PersistentMqNotice mqNotice) {
+        log.info("Received persistent message: {}", mqNotice);
+        String collectName = mqNotice.getCollectName();
+        String id = mqNotice.getId();
         Class<? extends IPersistent> clazz = persistentPool.findClazz(collectName);
         if (clazz == null) {
+            log.error("Unknown collect name: {}", collectName);
             return;
-//            throw new RuntimeException("Cannot find class corresponding to collection: " + collectName);
         }
-
-        // 3. 从 Redis 拉对象
         String key = persistentPool.persistentKey(clazz, id);
         IPersistent data = redisTemplate.opsForValue().get(key);
         if (data == null) {
-            log.warn("Cache miss in Redis for key: {}", key);
+            log.error("Cache miss in Redis for key: {}", key);
             return;
         }
         mongoTemplate.save(data);

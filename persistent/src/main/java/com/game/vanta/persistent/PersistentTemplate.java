@@ -1,13 +1,18 @@
 package com.game.vanta.persistent;
 
 import com.game.vanta.persistent.dao.IPersistent;
-import com.game.vanta.persistent.mq.PersistentMessageConsumer;
 import com.game.vanta.persistent.mq.PersistentMessageProducer;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 
 
 public class PersistentTemplate implements IPersistentService {
+
+    private static final Logger log = LoggerFactory.getLogger(PersistentTemplate.class);
 
     private final RedisTemplate<String, IPersistent> redisTemplate;
 
@@ -17,11 +22,11 @@ public class PersistentTemplate implements IPersistentService {
 
     private final PersistentMessageProducer persistentMessageProducer;
 
-    @SuppressWarnings("unchecked")
     public PersistentTemplate(
             RedisTemplate<String, IPersistent> redisTemplate,
             MongoTemplate mongoTemplate,
-            PersistentPool persistentPool, PersistentMessageProducer persistentMessageProducer) {
+            PersistentPool persistentPool,
+            PersistentMessageProducer persistentMessageProducer) {
         this.redisTemplate = redisTemplate;
         this.mongoTemplate = mongoTemplate;
         this.persistentPool = persistentPool;
@@ -36,6 +41,7 @@ public class PersistentTemplate implements IPersistentService {
         if (cache != null) {
             return cast(cache, clazz);
         }
+        // TODO 后续考虑-避免并发读取 mongo 的缓存击穿问题
         // 再查 Mongo
         T data = mongoTemplate.findById(id, clazz);
         if (data != null) {
@@ -46,16 +52,20 @@ public class PersistentTemplate implements IPersistentService {
     }
 
     @Override
-    public <T extends IPersistent> T updateAsync(T data) {
+    public <T extends IPersistent> void upsertAsync(T data) {
         String key = persistentPool.persistentKey(data.getClass(), data.getId());
         redisTemplate.opsForValue().set(key, data, data.timeout());
-        persistentMessageProducer.sendMqPost(data);
-        return data;
+        persistentMessageProducer.asyncSendMqNotice(data);
     }
 
     @Override
-    public <T extends IPersistent> T saveNow(T data) {
-        return null;
+    public <T extends IPersistent> void upsertNow(T data) {
+        SendResult sendResult = persistentMessageProducer.syncSendMqNotice(data);
+        SendStatus sendStatus = sendResult.getSendStatus();
+        if (sendStatus != SendStatus.SEND_OK) {
+            log.error("Failed to send persistent message: {}, status: {}", data, sendStatus);
+            throw new RuntimeException("Failed to send persistent message: " + data);
+        }
     }
 
     @Override
@@ -66,6 +76,5 @@ public class PersistentTemplate implements IPersistentService {
     private <T extends IPersistent> T cast(Object obj, Class<T> clazz) {
         return clazz.cast(obj);
     }
-
 
 }

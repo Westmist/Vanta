@@ -25,7 +25,6 @@ public class PersistentPool {
         }
     }
 
-
     public Class<? extends IPersistent> findClazz(String collectName) {
         return persistentPool.get(collectName);
     }
