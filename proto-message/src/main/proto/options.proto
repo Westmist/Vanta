@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
-option java_package = "ace.game.vanta.proto";
+option java_package = "com.game.vanta.proto";
 
 extend google.protobuf.MessageOptions {
   int32 msgId = 10000;

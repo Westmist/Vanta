@@ -1,7 +1,6 @@
 package com.game.vanta.persistent;
 
 import com.game.vanta.persistent.dao.IPersistent;
-import com.game.vanta.persistent.mq.DefaultPersistentMqSendCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

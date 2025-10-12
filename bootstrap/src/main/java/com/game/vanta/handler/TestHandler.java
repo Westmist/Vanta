@@ -1,10 +1,10 @@
 package com.game.vanta.handler;
 
-import ace.game.vanta.proto.Test;
 import com.game.vanta.actor.Player;
 import com.game.vanta.dao.Role;
 import com.game.vanta.net.register.MessageHandler;
 import com.game.vanta.persistent.DataCenter;
+import com.game.vanta.proto.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

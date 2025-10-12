@@ -7,9 +7,9 @@
         <artifactId>vanta</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>persistent</artifactId>
+    <artifactId>persistent-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>persistent</name>
+    <name>persistent-core</name>
     <description>persistent</description>
     <url/>
     <licenses>

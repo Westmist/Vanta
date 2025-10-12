@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PersistentProducerApplication {
+public class PersistentConsumerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PersistentProducerApplication.class, args);
+        SpringApplication.run(PersistentConsumerApplication.class, args);
     }
 
 }

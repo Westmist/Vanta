@@ -1,5 +1,6 @@
-package com.game.vanta.persistent.mq;
+package com.game.vanta.persistent.producer;
 
+import com.game.vanta.persistent.PersistentMqNotice;
 import com.game.vanta.persistent.PersistentPool;
 import com.game.vanta.persistent.config.PersistentProperties;
 import com.game.vanta.persistent.dao.IPersistent;

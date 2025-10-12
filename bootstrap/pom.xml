@@ -41,7 +41,7 @@
 
         <dependency>
             <groupId>com.game.vanta</groupId>
-            <artifactId>persistent</artifactId>
+            <artifactId>persistent-producer</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

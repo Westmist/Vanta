@@ -9,7 +9,7 @@
     </parent>
     <artifactId>proto-message</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>proto</name>
+    <name>proto-message</name>
     <description>proto</description>
     <url/>
     <licenses>
@@ -42,6 +42,31 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>io.github.ascopes</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <protocVersion>${protobuf-java.version}</protocVersion>
+                    <binaryMavenPlugins>
+                        <binaryMavenPlugin>
+                            <groupId>io.grpc</groupId>
+                            <artifactId>protoc-gen-grpc-java</artifactId>
+                            <version>${grpc.version}</version>
+                            <options>@generated=omit</options>
+                        </binaryMavenPlugin>
+                    </binaryMavenPlugins>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
 <!--            <plugin>-->
 <!--                <groupId>org.xolstice.maven.plugins</groupId>-->

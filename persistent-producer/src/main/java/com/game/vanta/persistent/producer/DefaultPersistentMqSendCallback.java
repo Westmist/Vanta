@@ -1,4 +1,4 @@
-package com.game.vanta.persistent.mq;
+package com.game.vanta.persistent.producer;
 
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.slf4j.Logger;

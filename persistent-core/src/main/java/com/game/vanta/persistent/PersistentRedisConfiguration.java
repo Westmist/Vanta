@@ -1,20 +1,15 @@
 package com.game.vanta.persistent;
 
 import com.game.vanta.persistent.dao.IPersistent;
-import com.game.vanta.persistent.mq.DefaultPersistentMqSendCallback;
-import com.game.vanta.persistent.mq.PersistentMessageProducer;
-import org.apache.rocketmq.client.producer.SendCallback;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class PersistentAutoConfiguration {
+public class PersistentRedisConfiguration {
 
     @Bean
     public RedisTemplate<String, IPersistent> persistentRedisTemplate(RedisConnectionFactory connectionFactory) {
@@ -29,21 +24,6 @@ public class PersistentAutoConfiguration {
 
         template.afterPropertiesSet();
         return template;
-    }
-
-    @Bean
-    public PersistentTemplate persistentTemplate(
-            RedisTemplate<String, IPersistent> redisTemplate,
-            MongoTemplate mongoTemplate,
-            PersistentPool persistentPool,
-            PersistentMessageProducer persistentMessageProducer) {
-        return new PersistentTemplate(redisTemplate, mongoTemplate, persistentPool, persistentMessageProducer);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(SendCallback.class)
-    public SendCallback persistentMqSendCallback() {
-        return new DefaultPersistentMqSendCallback();
     }
 
 }

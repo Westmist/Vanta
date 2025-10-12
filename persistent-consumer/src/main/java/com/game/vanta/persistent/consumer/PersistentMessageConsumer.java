@@ -1,8 +1,8 @@
 package com.game.vanta.persistent.consumer;
 
+import com.game.vanta.persistent.PersistentMqNotice;
 import com.game.vanta.persistent.PersistentPool;
 import com.game.vanta.persistent.dao.IPersistent;
-import com.game.vanta.persistent.mq.PersistentMqNotice;
 import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;

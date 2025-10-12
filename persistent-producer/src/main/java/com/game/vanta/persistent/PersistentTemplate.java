@@ -1,7 +1,7 @@
 package com.game.vanta.persistent;
 
 import com.game.vanta.persistent.dao.IPersistent;
-import com.game.vanta.persistent.mq.PersistentMessageProducer;
+import com.game.vanta.persistent.producer.PersistentMessageProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.slf4j.Logger;

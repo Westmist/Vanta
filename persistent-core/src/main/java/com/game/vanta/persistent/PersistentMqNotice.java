@@ -1,4 +1,4 @@
-package com.game.vanta.persistent.mq;
+package com.game.vanta.persistent;
 
 public class PersistentMqNotice {
 
