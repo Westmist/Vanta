@@ -21,41 +21,39 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({NettyProperties.class, NetworkProperties.class})
 public class NetworkAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(IGameParser.class)
-    public IGameParser<?> gameParser() {
-        return new ProtoBuffParser();
-    }
+  @Bean
+  @ConditionalOnMissingBean(IGameParser.class)
+  public IGameParser<?> gameParser() {
+    return new ProtoBuffParser();
+  }
 
-    @Bean
-    @ConditionalOnMissingBean(IMessagePool.class)
-    public IMessagePool<?> messagePool(IGameParser<?> gameParser) {
-        return new ProtoBuffGameMessagePool(gameParser);
-    }
+  @Bean
+  @ConditionalOnMissingBean(IMessagePool.class)
+  public IMessagePool<?> messagePool(IGameParser<?> gameParser) {
+    return new ProtoBuffGameMessagePool(gameParser);
+  }
 
-    @Bean
-    public MessageHandlerRegistrar messageHandlerRegistrar() {
-        return new MessageHandlerRegistrar();
-    }
+  @Bean
+  public MessageHandlerRegistrar messageHandlerRegistrar() {
+    return new MessageHandlerRegistrar();
+  }
 
-    @Bean
-    @ConditionalOnBean(BusinessHandlerProvider.class)
-    @ConditionalOnMissingBean(ChannelInitializerProvider.class)
-    public ChannelInitializerProvider channelInitializerProvider(
-            IMessagePool<?> iMessagePool,
-            BusinessHandlerProvider handlerProvider) {
-        return new DefaultChannelInitializer(iMessagePool, handlerProvider);
-    }
+  @Bean
+  @ConditionalOnBean(BusinessHandlerProvider.class)
+  @ConditionalOnMissingBean(ChannelInitializerProvider.class)
+  public ChannelInitializerProvider channelInitializerProvider(
+      IMessagePool<?> iMessagePool, BusinessHandlerProvider handlerProvider) {
+    return new DefaultChannelInitializer(iMessagePool, handlerProvider);
+  }
 
-    @ConditionalOnMissingBean(INetworkServer.class)
-    @ConditionalOnBean(ChannelInitializerProvider.class)
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnProperty(name = "network.enabled", havingValue = "true", matchIfMissing = true)
-    public NettyServer nettyServer(
-            NetworkProperties networkProperties,
-            NettyProperties nettyProperties,
-            ChannelInitializerProvider initializerProvider) {
-        return new NettyServer(networkProperties, nettyProperties, initializerProvider);
-    }
-
+  @ConditionalOnMissingBean(INetworkServer.class)
+  @ConditionalOnBean(ChannelInitializerProvider.class)
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  @ConditionalOnProperty(name = "network.enabled", havingValue = "true", matchIfMissing = true)
+  public NettyServer nettyServer(
+      NetworkProperties networkProperties,
+      NettyProperties nettyProperties,
+      ChannelInitializerProvider initializerProvider) {
+    return new NettyServer(networkProperties, nettyProperties, initializerProvider);
+  }
 }

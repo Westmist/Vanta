@@ -14,46 +14,44 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RocketMQMessageListener(
-        topic = "${persistent.topic:persistent-topic}",
-        consumerGroup = "${rocketmq.consumer.group}",
-        messageModel = MessageModel.CLUSTERING
-)
+    topic = "${persistent.topic:persistent-topic}",
+    consumerGroup = "${rocketmq.consumer.group}",
+    messageModel = MessageModel.CLUSTERING)
 public class PersistentMessageConsumer implements RocketMQListener<PersistentMqNotice> {
 
-    private static final Logger log = LoggerFactory.getLogger(PersistentMessageConsumer.class);
+  private static final Logger log = LoggerFactory.getLogger(PersistentMessageConsumer.class);
 
-    private final PersistentPool persistentPool;
+  private final PersistentPool persistentPool;
 
-    private final RedisTemplate<String, IPersistent> redisTemplate;
+  private final RedisTemplate<String, IPersistent> redisTemplate;
 
-    private final MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
-    public PersistentMessageConsumer(
-            PersistentPool persistentPool,
-            RedisTemplate<String, IPersistent> redisTemplate,
-            MongoTemplate mongoTemplate) {
-        this.persistentPool = persistentPool;
-        this.redisTemplate = redisTemplate;
-        this.mongoTemplate = mongoTemplate;
+  public PersistentMessageConsumer(
+      PersistentPool persistentPool,
+      RedisTemplate<String, IPersistent> redisTemplate,
+      MongoTemplate mongoTemplate) {
+    this.persistentPool = persistentPool;
+    this.redisTemplate = redisTemplate;
+    this.mongoTemplate = mongoTemplate;
+  }
+
+  @Override
+  public void onMessage(PersistentMqNotice mqNotice) {
+    log.info("Received persistent message: {}", mqNotice.toString());
+    String collectName = mqNotice.getCollectName();
+    String id = mqNotice.getId();
+    Class<? extends IPersistent> clazz = persistentPool.findClazz(collectName);
+    if (clazz == null) {
+      log.error("Unknown collect name: {}", collectName);
+      throw new RuntimeException("Unknown collect name: " + collectName);
     }
-
-    @Override
-    public void onMessage(PersistentMqNotice mqNotice) {
-        log.info("Received persistent message: {}", mqNotice.toString());
-        String collectName = mqNotice.getCollectName();
-        String id = mqNotice.getId();
-        Class<? extends IPersistent> clazz = persistentPool.findClazz(collectName);
-        if (clazz == null) {
-            log.error("Unknown collect name: {}", collectName);
-            throw new RuntimeException("Unknown collect name: " + collectName);
-        }
-        String key = persistentPool.persistentKey(clazz, id);
-        IPersistent data = redisTemplate.opsForValue().get(key);
-        if (data == null) {
-            log.error("Cache miss in Redis for key: {}", key);
-            throw new RuntimeException("Cache miss in Redis for key: " + key);
-        }
-        mongoTemplate.save(data);
+    String key = persistentPool.persistentKey(clazz, id);
+    IPersistent data = redisTemplate.opsForValue().get(key);
+    if (data == null) {
+      log.error("Cache miss in Redis for key: {}", key);
+      throw new RuntimeException("Cache miss in Redis for key: " + key);
     }
-
+    mongoTemplate.save(data);
+  }
 }

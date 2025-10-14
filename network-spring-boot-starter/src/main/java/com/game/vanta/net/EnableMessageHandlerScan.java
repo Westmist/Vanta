@@ -1,8 +1,7 @@
 package com.game.vanta.net;
 
-import org.springframework.context.annotation.Import;
-
 import java.lang.annotation.*;
+import org.springframework.context.annotation.Import;
 
 @Documented
 @Target(ElementType.TYPE)
@@ -10,8 +9,7 @@ import java.lang.annotation.*;
 @Import(NetworkAutoConfiguration.class)
 public @interface EnableMessageHandlerScan {
 
-    String[] messagePackages();
+  String[] messagePackages();
 
-    String[] handlerPackages();
-
+  String[] handlerPackages();
 }
