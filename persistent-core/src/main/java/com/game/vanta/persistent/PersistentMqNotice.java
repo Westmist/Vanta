@@ -39,4 +39,12 @@ public class PersistentMqNotice {
         this.payload = payload;
     }
 
+    @Override
+    public String toString() {
+        return "PersistentMqNotice{" +
+                "collectName='" + collectName + '\'' +
+                ", id='" + id + '\'' +
+                '}';
+    }
+
 }

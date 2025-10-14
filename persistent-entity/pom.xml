@@ -7,10 +7,10 @@
         <artifactId>vanta</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>persistent-producer</artifactId>
+    <artifactId>persistent-entity</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>persistent-producer</name>
-    <description>persistent-producer</description>
+    <name>persistent-entity</name>
+    <description>persistence-entity</description>
 
     <dependencies>
 
@@ -23,7 +23,6 @@
             <groupId>com.game.vanta</groupId>
             <artifactId>persistent-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -31,6 +30,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
 </project>

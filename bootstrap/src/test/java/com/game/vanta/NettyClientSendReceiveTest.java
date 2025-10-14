@@ -45,7 +45,7 @@ class NettyClientSendReceiveTest {
                             ch.pipeline().addLast(new SimpleChannelInboundHandler<Message>() {
                                 @Override
                                 public void channelActive(ChannelHandlerContext ctx) {
-                                    var testMessage = com.game.vanta.proto.Test.ReqTestMessage.newBuilder()
+                                    com.game.vanta.proto.Test.ReqTestMessage testMessage = com.game.vanta.proto.Test.ReqTestMessage.newBuilder()
                                             .setId(1)
                                             .setName("Test")
                                             .build();

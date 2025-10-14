@@ -39,19 +39,19 @@ public class PersistentMessageConsumer implements RocketMQListener<PersistentMqN
 
     @Override
     public void onMessage(PersistentMqNotice mqNotice) {
-        log.info("Received persistent message: {}", mqNotice);
+        log.info("Received persistent message: {}", mqNotice.toString());
         String collectName = mqNotice.getCollectName();
         String id = mqNotice.getId();
         Class<? extends IPersistent> clazz = persistentPool.findClazz(collectName);
         if (clazz == null) {
             log.error("Unknown collect name: {}", collectName);
-            return;
+            throw new RuntimeException("Unknown collect name: " + collectName);
         }
         String key = persistentPool.persistentKey(clazz, id);
         IPersistent data = redisTemplate.opsForValue().get(key);
         if (data == null) {
             log.error("Cache miss in Redis for key: {}", key);
-            return;
+            throw new RuntimeException("Cache miss in Redis for key: " + key);
         }
         mongoTemplate.save(data);
     }

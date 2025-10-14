@@ -1,4 +1,4 @@
-package com.game.vanta.dao;
+package com.game.vanta.persistent.entity;
 
 import com.game.vanta.persistent.dao.IRolePersistent;
 import org.springframework.data.annotation.Id;

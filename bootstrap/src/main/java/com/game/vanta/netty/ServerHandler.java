@@ -41,9 +41,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
                 throw new RuntimeException(e);
             }
         } else {
-            System.out.println("未找到消息处理器 for message: " + msg.getClass().getSimpleName());
+            log.warn("Message handler not found for message: {}", msg.getClass().getSimpleName());
         }
-        System.out.println("收到消息:" + msg.getClass().getSimpleName() + " from " + channel.remoteAddress());
+        log.info("Received message: {} from {}", msg.getClass().getSimpleName(), channel.remoteAddress());
     }
 
     /**
@@ -52,7 +52,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         PlayerManager.getInstance().addPlayer(ctx.channel(), new Player(ctx.channel()));
-        System.out.println("新连接:" + ctx.channel().remoteAddress());
+        log.info("New connection: {}", ctx.channel().remoteAddress());
     }
 
     /**
@@ -60,7 +60,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        System.out.println("断开连接:" + ctx.channel().remoteAddress());
+        log.info("Disconnected: {}", ctx.channel().remoteAddress());
         PlayerManager.getInstance().removePlayer(ctx.channel());
     }
 
@@ -69,7 +69,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        System.out.println("连接异常:" + ctx.channel().remoteAddress());
+        log.error("Connection exception: {}", ctx.channel().remoteAddress(), cause);
     }
 
     /**
@@ -77,7 +77,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      */
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) {
-        System.out.println("channelWritabilityChanged: " + ctx.channel().remoteAddress() + " isWritable: " + ctx.channel().isWritable());
+        log.info("Channel writability changed: {} isWritable: {}",
+                ctx.channel().remoteAddress(), ctx.channel().isWritable());
     }
 
     /**
@@ -85,10 +86,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-        System.out.println(
-                "userEventTriggered: " + ctx.channel().remoteAddress() + " event: " + evt.getClass().getSimpleName()
-        );
+        log.info("User event triggered: {} event: {}",
+                ctx.channel().remoteAddress(), evt.getClass().getSimpleName());
     }
 
 }
-

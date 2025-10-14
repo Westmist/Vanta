@@ -13,7 +13,5 @@ rocketmq:
   consumer:
     group: persistent-consumer-group
     message-model: CLUSTERING
-  producer:
-    group: persistent-producer-group
 persistent:
   topic: persistent-topic
