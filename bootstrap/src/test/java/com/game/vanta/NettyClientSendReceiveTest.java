@@ -19,62 +19,55 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(classes = {NetworkAutoConfiguration.class, BootstrapApplication.class})
 class NettyClientSendReceiveTest {
 
-  @Autowired private IMessagePool<Message> messagePool;
+    @Autowired
+    private IMessagePool<Message> messagePool;
 
-  @Test
-  void contextLoads() throws InterruptedException {
-    EventLoopGroup group = new NioEventLoopGroup();
-    AtomicBoolean received = new AtomicBoolean(false);
-    try {
-      Bootstrap bootstrap = new Bootstrap();
-      bootstrap
-          .group(group)
-          .channel(NioSocketChannel.class)
-          .handler(
-              new ChannelInitializer<>() {
-                @Override
-                protected void initChannel(Channel ch) {
-                  ch.pipeline().addLast(messagePool.decoder());
-                  ch.pipeline().addLast(messagePool.encoder());
-                  ch.pipeline()
-                      .addLast(
-                          new SimpleChannelInboundHandler<Message>() {
-                            @Override
-                            public void channelActive(ChannelHandlerContext ctx) {
-                              com.game.vanta.proto.Test.ReqTestMessage testMessage =
-                                  com.game.vanta.proto.Test.ReqTestMessage.newBuilder()
-                                      .setId(1)
-                                      .setName("Test")
-                                      .build();
-                              try {
-                                ctx.writeAndFlush(testMessage).sync();
-                              } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                              }
-                            }
+    @Test
+    void contextLoads() throws InterruptedException {
+        EventLoopGroup group = new NioEventLoopGroup();
+        AtomicBoolean received = new AtomicBoolean(false);
+        try {
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(group).channel(NioSocketChannel.class).handler(
+                    new ChannelInitializer<>() {
+                        @Override
+                        protected void initChannel(Channel ch) {
+                            ch.pipeline().addLast(messagePool.decoder());
+                            ch.pipeline().addLast(messagePool.encoder());
+                            ch.pipeline().addLast(
+                                    new SimpleChannelInboundHandler<Message>() {
+                                        @Override
+                                        public void channelActive(ChannelHandlerContext ctx) {
+                                            com.game.vanta.proto.Test.ReqTestMessage testMessage = com.game.vanta.proto.Test.ReqTestMessage.newBuilder().setId(1).setName("Test").build();
+                                            try {
+                                                ctx.writeAndFlush(testMessage).sync();
+                                            } catch (InterruptedException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
 
-                            @Override
-                            protected void channelRead0(ChannelHandlerContext ctx, Message msg) {
-                              System.out.println("收到服务端响应: " + msg);
-                              received.set(true);
-                              ctx.close();
-                            }
+                                        @Override
+                                        protected void channelRead0(ChannelHandlerContext ctx, Message msg) {
+                                            System.out.println("收到服务端响应: " + msg);
+                                            received.set(true);
+                                            ctx.close();
+                                        }
 
-                            @Override
-                            public void exceptionCaught(
-                                ChannelHandlerContext ctx, Throwable cause) {
-                              cause.printStackTrace();
-                              ctx.close();
-                            }
-                          });
-                }
-              });
+                                        @Override
+                                        public void exceptionCaught(
+                                                                    ChannelHandlerContext ctx, Throwable cause) {
+                                            cause.printStackTrace();
+                                            ctx.close();
+                                        }
+                                    });
+                        }
+                    });
 
-      bootstrap.connect("localhost", 9201).sync().channel().closeFuture().sync();
-    } finally {
-      group.shutdownGracefully().sync();
+            bootstrap.connect("localhost", 9201).sync().channel().closeFuture().sync();
+        } finally {
+            group.shutdownGracefully().sync();
+        }
+
+        assertTrue(received.get(), "未收到服务端响应");
     }
-
-    assertTrue(received.get(), "未收到服务端响应");
-  }
 }

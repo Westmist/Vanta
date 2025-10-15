@@ -8,9 +8,9 @@ import io.netty.channel.socket.SocketChannel;
 
 public interface ChannelInitializerProvider {
 
-  ChannelInitializer<SocketChannel> buildInitializer(NettyProperties properties);
+    ChannelInitializer<SocketChannel> buildInitializer(NettyProperties properties);
 
-  IMessagePool<?> messagePool();
+    IMessagePool<?> messagePool();
 
-  BusinessHandlerProvider handlerProvider();
+    BusinessHandlerProvider handlerProvider();
 }

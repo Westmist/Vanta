@@ -4,13 +4,13 @@ import java.time.Duration;
 
 public interface IPersistent {
 
-  String getId();
+    String getId();
 
-  void setId(String id);
+    void setId(String id);
 
-  boolean isDirty();
+    boolean isDirty();
 
-  void setDirty(boolean dirty);
+    void setDirty(boolean dirty);
 
-  Duration timeout();
+    Duration timeout();
 }

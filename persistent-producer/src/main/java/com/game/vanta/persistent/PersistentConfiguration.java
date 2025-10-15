@@ -13,19 +13,16 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Configuration
 public class PersistentConfiguration {
 
-  @Bean
-  public PersistentTemplate persistentTemplate(
-      RedisTemplate<String, IPersistent> redisTemplate,
-      MongoTemplate mongoTemplate,
-      PersistentPool persistentPool,
-      PersistentMessageProducer persistentMessageProducer) {
-    return new PersistentTemplate(
-        redisTemplate, mongoTemplate, persistentPool, persistentMessageProducer);
-  }
+    @Bean
+    public PersistentTemplate persistentTemplate(
+                                                 RedisTemplate<String, IPersistent> redisTemplate, MongoTemplate mongoTemplate, PersistentPool persistentPool, PersistentMessageProducer persistentMessageProducer) {
+        return new PersistentTemplate(
+                redisTemplate, mongoTemplate, persistentPool, persistentMessageProducer);
+    }
 
-  @Bean
-  @ConditionalOnMissingBean(SendCallback.class)
-  public SendCallback persistentMqSendCallback() {
-    return new DefaultPersistentMqSendCallback();
-  }
+    @Bean
+    @ConditionalOnMissingBean(SendCallback.class)
+    public SendCallback persistentMqSendCallback() {
+        return new DefaultPersistentMqSendCallback();
+    }
 }

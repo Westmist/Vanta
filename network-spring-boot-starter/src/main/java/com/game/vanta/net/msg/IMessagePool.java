@@ -7,13 +7,13 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 public interface IMessagePool<M> {
 
-  IGameParser<M> messageParser();
+    IGameParser<M> messageParser();
 
-  MessageToByteEncoder<M> encoder();
+    MessageToByteEncoder<M> encoder();
 
-  ByteToMessageDecoder decoder();
+    ByteToMessageDecoder decoder();
 
-  void register(int msgId, IContextHandle<? extends GameActorContext, M> contextHandle);
+    void register(int msgId, IContextHandle<? extends GameActorContext, M> contextHandle);
 
-  IContextHandle<? extends GameActorContext, M> getHandler(M message);
+    IContextHandle<? extends GameActorContext, M> getHandler(M message);
 }

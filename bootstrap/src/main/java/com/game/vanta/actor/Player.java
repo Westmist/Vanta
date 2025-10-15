@@ -5,9 +5,9 @@ import io.netty.channel.Channel;
 
 public class Player implements GameActorContext {
 
-  private final Channel channel;
+    private final Channel channel;
 
-  public Player(Channel channel) {
-    this.channel = channel;
-  }
+    public Player(Channel channel) {
+        this.channel = channel;
+    }
 }

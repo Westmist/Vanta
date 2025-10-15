@@ -12,26 +12,26 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  */
 public class ProtoBuffGameDecoder extends LengthFieldBasedFrameDecoder {
 
-  private final IGameParser<Message> parser;
+    private final IGameParser<Message> parser;
 
-  public ProtoBuffGameDecoder(IGameParser<Message> parser) {
-    super(1024 * 1024, 0, 4, -4, 4);
-    this.parser = parser;
-  }
+    public ProtoBuffGameDecoder(IGameParser<Message> parser) {
+        super(1024 * 1024, 0, 4, -4, 4);
+        this.parser = parser;
+    }
 
-  @Override
-  protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
-    ByteBuf frame = (ByteBuf) super.decode(ctx, in);
-    if (frame == null) {
-      return null;
+    @Override
+    protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+        ByteBuf frame = (ByteBuf) super.decode(ctx, in);
+        if (frame == null) {
+            return null;
+        }
+        try {
+            int msgId = frame.readInt();
+            byte[] bodyBytes = new byte[frame.readableBytes()];
+            frame.readBytes(bodyBytes);
+            return parser.parseFrom(msgId, bodyBytes);
+        } finally {
+            frame.release();
+        }
     }
-    try {
-      int msgId = frame.readInt();
-      byte[] bodyBytes = new byte[frame.readableBytes()];
-      frame.readBytes(bodyBytes);
-      return parser.parseFrom(msgId, bodyBytes);
-    } finally {
-      frame.release();
-    }
-  }
 }

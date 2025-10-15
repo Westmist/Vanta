@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 @Import(NetworkAutoConfiguration.class)
 public @interface EnableMessageHandlerScan {
 
-  String[] messagePackages();
+    String[] messagePackages();
 
-  String[] handlerPackages();
+    String[] handlerPackages();
 }

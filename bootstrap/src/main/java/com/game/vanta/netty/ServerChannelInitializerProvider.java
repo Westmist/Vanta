@@ -11,14 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServerChannelInitializerProvider implements BusinessHandlerProvider {
 
-  private final IMessagePool<Message> messagePool;
+    private final IMessagePool<Message> messagePool;
 
-  public ServerChannelInitializerProvider(IMessagePool<Message> messagePool) {
-    this.messagePool = messagePool;
-  }
+    public ServerChannelInitializerProvider(IMessagePool<Message> messagePool) {
+        this.messagePool = messagePool;
+    }
 
-  @Override
-  public List<Supplier<ChannelHandler>> businessHandlers() {
-    return List.of(() -> new ServerHandler(messagePool));
-  }
+    @Override
+    public List<Supplier<ChannelHandler>> businessHandlers() {
+        return List.of(() -> new ServerHandler(messagePool));
+    }
 }

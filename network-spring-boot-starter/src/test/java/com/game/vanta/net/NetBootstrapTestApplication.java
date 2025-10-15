@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class NetBootstrapTestApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(NetBootstrapTestApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(NetBootstrapTestApplication.class, args);
+    }
 }
