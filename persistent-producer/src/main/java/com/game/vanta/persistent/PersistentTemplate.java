@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.time.Duration;
+
 
 public class PersistentTemplate implements IPersistentService {
 
@@ -23,10 +25,10 @@ public class PersistentTemplate implements IPersistentService {
     private final PersistentMessageProducer persistentMessageProducer;
 
     public PersistentTemplate(
-            RedisTemplate<String, IPersistent> redisTemplate,
-            MongoTemplate mongoTemplate,
-            PersistentPool persistentPool,
-            PersistentMessageProducer persistentMessageProducer) {
+        RedisTemplate<String, IPersistent> redisTemplate,
+        MongoTemplate mongoTemplate,
+        PersistentPool persistentPool,
+        PersistentMessageProducer persistentMessageProducer) {
         this.redisTemplate = redisTemplate;
         this.mongoTemplate = mongoTemplate;
         this.persistentPool = persistentPool;
@@ -46,7 +48,7 @@ public class PersistentTemplate implements IPersistentService {
         T data = mongoTemplate.findById(id, clazz);
         if (data != null) {
             // 回写 Redis
-            redisTemplate.opsForValue().set(key, data, data.timeout());
+            doRedisOpsSet(key, data);
         }
         return data;
     }
@@ -54,7 +56,7 @@ public class PersistentTemplate implements IPersistentService {
     @Override
     public <T extends IPersistent> void upsertAsync(T data) {
         String key = persistentPool.persistentKey(data.getClass(), data.getId());
-        redisTemplate.opsForValue().set(key, data, data.timeout());
+        doRedisOpsSet(key, data);
         persistentMessageProducer.asyncSendMqNotice(data);
     }
 
@@ -75,6 +77,18 @@ public class PersistentTemplate implements IPersistentService {
 
     private <T extends IPersistent> T cast(Object obj, Class<T> clazz) {
         return clazz.cast(obj);
+    }
+
+    private <T extends IPersistent> void doRedisOpsSet(String key, T data) {
+        Duration timeout = data.timeout();
+        if (timeout == null) {
+            throw new RuntimeException("Timeout is null: key=" + key + ", class=" + data.getClass().getSimpleName());
+        }
+        if (timeout.isZero() || timeout.isNegative()) {
+            redisTemplate.opsForValue().set(key, data);
+        } else {
+            redisTemplate.opsForValue().set(key, data, timeout);
+        }
     }
 
 }

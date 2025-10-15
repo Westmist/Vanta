@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerManager {
 
-    private final Map<Channel, GameActorContext> playerMap = new ConcurrentHashMap<>();
+    private final Map<String, GameActorContext> playerMap = new ConcurrentHashMap<>();
 
     private static final PlayerManager INSTANCE = new PlayerManager();
 
@@ -20,17 +20,8 @@ public class PlayerManager {
         return INSTANCE;
     }
 
-    public <T extends GameActorContext> void addPlayer(Channel channel, T t) {
-        playerMap.put(channel, t);
-    }
-
-    public void removePlayer(Channel channel) {
-        playerMap.remove(channel);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends GameActorContext> T getPlayer(Channel channel) {
-        return (T) playerMap.get(channel);
+    public void removePlayer(String id) {
+        playerMap.remove(id);
     }
 
 }

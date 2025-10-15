@@ -2,7 +2,6 @@ package com.game.vanta.netty;
 
 
 import com.game.vanta.actor.Player;
-import com.game.vanta.manager.PlayerManager;
 import com.game.vanta.net.msg.IMessagePool;
 import com.game.vanta.net.register.IContextHandle;
 import com.google.protobuf.Message;
@@ -11,6 +10,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.game.vanta.netty.ChannelAttributeKey.PLAYER_KEY;
 
 public class ServerHandler extends SimpleChannelInboundHandler<Message> {
 
@@ -30,7 +31,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
         Channel channel = ctx.channel();
         IContextHandle<Player, Message> handler = (IContextHandle<Player, Message>) messagePool.getHandler(msg);
         if (handler != null) {
-            Player player = PlayerManager.getInstance().getPlayer(ctx.channel());
+            Player player = channel.attr(PLAYER_KEY).get();
             try {
                 Message rep = handler.invoke(player, msg);
                 if (rep != null) {
@@ -51,8 +52,10 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        PlayerManager.getInstance().addPlayer(ctx.channel(), new Player(ctx.channel()));
-        log.info("New connection: {}", ctx.channel().remoteAddress());
+        Channel channel = ctx.channel();
+        Player player = new Player(channel);
+        channel.attr(PLAYER_KEY).set(player);
+        log.info("New connection: {}", channel.remoteAddress());
     }
 
     /**
@@ -60,8 +63,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        log.info("Disconnected: {}", ctx.channel().remoteAddress());
-        PlayerManager.getInstance().removePlayer(ctx.channel());
+        Channel channel = ctx.channel();
+        log.info("Disconnected: {}", channel.remoteAddress());
+        Player player = channel.attr(PLAYER_KEY).get();
     }
 
     /**
@@ -78,7 +82,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) {
         log.info("Channel writability changed: {} isWritable: {}",
-                ctx.channel().remoteAddress(), ctx.channel().isWritable());
+            ctx.channel().remoteAddress(), ctx.channel().isWritable());
     }
 
     /**
@@ -87,7 +91,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         log.info("User event triggered: {} event: {}",
-                ctx.channel().remoteAddress(), evt.getClass().getSimpleName());
+            ctx.channel().remoteAddress(), evt.getClass().getSimpleName());
     }
 
 }
