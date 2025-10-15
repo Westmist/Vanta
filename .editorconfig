@@ -1,0 +1,11 @@
+# 顶层 EditorConfig 文件
+root = true
+
+# 通用缩进与编码规范
+[*.{java,md,groovy,xml,yml,yaml,properties}]
+indent_style = tab
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
