@@ -4,15 +4,21 @@ package com.game.vanta.persistent;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import jakarta.annotation.PostConstruct;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.spring.support.DefaultRocketMQListenerContainer;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * 检测存储依赖是否可用
@@ -28,25 +34,28 @@ public class ConnectivityChecker {
 
     private final MongoProperties mongoProperties;
 
-    private final RocketMQTemplate rocketMQTemplate;
+    private final DefaultMQProducer rocketMQProducer;
 
-    private final String testTopic = "system-startup-test";
+    private final List<DefaultRocketMQListenerContainer> listenerContainers;
 
-    public ConnectivityChecker(
-        MongoClient mongoClient,
-        RedisConnectionFactory redisConnectionFactory,
-        MongoProperties mongoProperties,
-        RocketMQTemplate rocketMQTemplate) {
+    private final String healthCheckTopic = "health-check-topic";
+
+    public ConnectivityChecker(MongoClient mongoClient,
+                               RedisConnectionFactory redisConnectionFactory,
+                               MongoProperties mongoProperties,
+                               @Autowired(required = false) DefaultMQProducer rocketMQProducer,
+                               @Autowired(required = false) List<DefaultRocketMQListenerContainer> listenerContainers) {
         this.mongoClient = mongoClient;
         this.redisConnectionFactory = redisConnectionFactory;
         this.mongoProperties = mongoProperties;
-        this.rocketMQTemplate = rocketMQTemplate;
+        this.rocketMQProducer = rocketMQProducer;
+        this.listenerContainers = listenerContainers;
     }
 
     @PostConstruct
     public void checkDependencies() {
         checkRedis();
-        checkMQ();
+        checkRocketMQ();
         checkMongo();
     }
 
@@ -101,18 +110,44 @@ public class ConnectivityChecker {
     /**
      * 检查 RocketMQ 可用性
      */
-    public void checkMQ() {
-        try {
-            // 打印 MQ 地址和 topic
-            String nameServerAddr = rocketMQTemplate.getProducer().getNamesrvAddr();
-            log.info("Checking RocketMQ via RocketMQTemplate, NameServer={}, testTopic={}", nameServerAddr, testTopic);
+    private void checkRocketMQ() {
 
-            // 发送一个轻量测试消息
-            rocketMQTemplate.syncSend(testTopic, "ping");
-            log.info("RocketMQ is available.");
-        } catch (Exception e) {
-            throw logAndWrap("RocketMQ", e);
+        // 检查生产者
+        if (rocketMQProducer != null) {
+            try {
+                String ns = rocketMQProducer.getNamesrvAddr();
+                log.info("Checking RocketMQ producer, NameServer={}", ns);
+
+                // 发送轻量测试消息
+                SendResult sendResult = rocketMQProducer.send(new Message(
+                    healthCheckTopic, "ping".getBytes()
+                ));
+                log.info("RocketMQ test message sent: {}", sendResult);
+            } catch (Exception e) {
+                throw new IllegalStateException("RocketMQ producer check failed", e);
+            }
         }
+
+        // 检查消费者
+        if (listenerContainers != null) {
+            for (DefaultRocketMQListenerContainer container : listenerContainers) {
+                try {
+                    log.info("Checking consumer, group={}, topic={}",
+                        container.getConsumerGroup(),
+                        container.getTopic());
+
+                    // 尝试获取订阅队列，如果能成功说明能连上 Broker
+                    container.getConsumer().fetchSubscribeMessageQueues(container.getTopic());
+
+                    log.info("RocketMQ consumer check OK, group={}, topic={}",
+                        container.getConsumerGroup(), container.getTopic());
+
+                } catch (Exception e) {
+                    throw logAndWrap("RocketMQ consumer " + container.getConsumerGroup(), e);
+                }
+            }
+        }
+
     }
 
     /**
