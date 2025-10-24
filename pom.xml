@@ -21,6 +21,7 @@
         <protobuf-java.version>4.30.2</protobuf-java.version>
         <spring-grpc.version>0.10.0</spring-grpc.version>
         <rocketmq.version>2.3.0</rocketmq.version>
+        <spring-cloud-nacos.version>2025.0.0.0</spring-cloud-nacos.version>
     </properties>
 
     <dependencyManagement>
@@ -38,6 +39,18 @@
                 <version>${protobuf-java.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+                <version>${spring-cloud-nacos.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <version>${spring-cloud-nacos.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -50,6 +63,7 @@
         <module>persistent-producer</module>
         <module>proto-message</module>
         <module>vanta-common</module>
+        <module>redis-eventbus</module>
     </modules>
 
     <build>

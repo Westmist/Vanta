@@ -1,0 +1,21 @@
+spring:
+  application:
+      name: vanta-consumer
+  cloud:
+      nacos:
+          config:
+              enabled: false
+  data:
+    redis:
+      url: redis://127.0.0.1:6379
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://127.0.0.1:27017
+      database: vanta
+rocketmq:
+  name-server: 127.0.0.1:9876
+  consumer:
+    group: persistent-consumer-group
+    message-model: CLUSTERING
+persistent:
+  topic: persistent-topic

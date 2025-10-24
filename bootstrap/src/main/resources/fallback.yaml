@@ -1,0 +1,23 @@
+spring:
+  application:
+      name: vanta-bootstrap
+  cloud:
+    nacos:
+      config:
+          enabled: false
+  data:
+    redis:
+      url: redis://127.0.0.1:6379
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://127.0.0.1:27017
+      database: vanta
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: persistent-producer-group
+    send-message-timeout: 3000
+network:
+  port: 9201
+persistent:
+  topic: persistent-topic
