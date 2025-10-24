@@ -1,10 +1,11 @@
 package com.game.vanta.common.codec;
 
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtobufIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeEnv;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
+
+import io.protostuff.LinkedBuffer;
+import io.protostuff.ProtobufIOUtil;
+import io.protostuff.Schema;
+import io.protostuff.runtime.RuntimeEnv;
+import io.protostuff.runtime.RuntimeSchema;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

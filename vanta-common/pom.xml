@@ -16,18 +16,16 @@
     </properties>
     <dependencies>
 
-        <!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-core -->
         <dependency>
-            <groupId>com.dyuproject.protostuff</groupId>
+            <groupId>io.protostuff</groupId>
             <artifactId>protostuff-core</artifactId>
-            <version>1.4.0</version>
+            <version>1.8.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-runtime -->
         <dependency>
-            <groupId>com.dyuproject.protostuff</groupId>
+            <groupId>io.protostuff</groupId>
             <artifactId>protostuff-runtime</artifactId>
-            <version>1.4.0</version>
+            <version>1.8.0</version>
         </dependency>
 
         <dependency>

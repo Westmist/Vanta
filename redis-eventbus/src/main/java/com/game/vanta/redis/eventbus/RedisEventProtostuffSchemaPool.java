@@ -56,7 +56,7 @@ public class RedisEventProtostuffSchemaPool extends AbsProtostuffSchemaPool<Redi
                 }
                 MethodHandle mh = ClassScanner.bindBean(bean, method);
                 actionPool.put((Class<? extends RedisEvent>) eventMessage, mh::invoke);
-                log.info("Registered Redis event action: {}, Method: {}", eventMessage, method.getName());
+                log.info("Registered Redis event action: {}, className: {}, Method: {}", eventMessage, handlerClazz.getName(), method.getName());
             }
         }
 

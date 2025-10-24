@@ -4,7 +4,6 @@ import com.game.vanta.common.scanner.ClassScanner;
 import com.game.vanta.net.EnableMessageHandlerScan;
 import com.game.vanta.net.msg.IGameParser;
 import com.game.vanta.net.msg.IMessagePool;
-import com.game.vanta.net.netty.NettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
