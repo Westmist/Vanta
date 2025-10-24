@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,8 +35,8 @@ public class NetworkAutoConfiguration {
     }
 
     @Bean
-    public MessageHandlerRegistrar messageHandlerRegistrar() {
-        return new MessageHandlerRegistrar();
+    public MessageHandlerRegistrar messageHandlerRegistrar(ApplicationContext applicationContext) {
+        return new MessageHandlerRegistrar(applicationContext);
     }
 
     @Bean

@@ -5,6 +5,7 @@ import com.game.vanta.redis.eventbus.pubsub.RedisEventPublisher;
 import com.game.vanta.redis.eventbus.pubsub.RedisEventSubscriber;
 import com.game.vanta.redis.eventbus.pubsub.RedisEventWrapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -35,8 +36,10 @@ public class EventRedisConfiguration {
 
     @Bean
     @ConditionalOnBean(RedisEventBusConfig.class)
-    public RedisEventProtostuffSchemaPool redisEventProtostuffSchemaPool(RedisEventBusConfig config) {
-        return new RedisEventProtostuffSchemaPool(config.getEventActionPackages());
+    public RedisEventProtostuffSchemaPool redisEventProtostuffSchemaPool(
+        RedisEventBusConfig config,
+        ApplicationContext applicationContext) {
+        return new RedisEventProtostuffSchemaPool(config.getEventActionPackages(), applicationContext);
     }
 
     @Bean

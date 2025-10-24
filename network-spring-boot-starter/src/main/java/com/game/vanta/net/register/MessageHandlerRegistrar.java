@@ -1,47 +1,30 @@
 package com.game.vanta.net.register;
 
+import com.game.vanta.common.scanner.ClassScanner;
 import com.game.vanta.net.EnableMessageHandlerScan;
-import com.game.vanta.net.netty.NettyServer;
 import com.game.vanta.net.msg.IGameParser;
 import com.game.vanta.net.msg.IMessagePool;
-import com.google.protobuf.Message;
+import com.game.vanta.net.netty.NettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ResourceLoaderAware;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.lang.Nullable;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
 import java.util.Set;
 
-public class MessageHandlerRegistrar implements SmartInitializingSingleton,
-        ResourceLoaderAware, ApplicationContextAware {
+public class MessageHandlerRegistrar implements SmartInitializingSingleton {
 
-    private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
+    private static final Logger log = LoggerFactory.getLogger(MessageHandlerRegistrar.class);
 
-    private ResourceLoader resourceLoader;
+    private final ApplicationContext applicationContext;
 
-    private ApplicationContext applicationContext;
-
-    @Override
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public MessageHandlerRegistrar(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
@@ -58,43 +41,38 @@ public class MessageHandlerRegistrar implements SmartInitializingSingleton,
 
         // 注册消息池
         String[] messagePackages = scanAnno.messagePackages();
-        for (Class messageClazz : scanClasses(messagePackages, defaultMessageClazz)) {
+        Set<Class<?>> messageClasses = ClassScanner.builder()
+            .basePackages(messagePackages)
+            .bySuperType(defaultMessageClazz)
+            .scan();
+        for (Class messageClazz : messageClasses) {
             parser.register(messageClazz);
         }
 
         // 注册处理池
         String[] handlerPackages = scanAnno.handlerPackages();
-        for (Class<?> handlerClazz : scanClasses(handlerPackages)) {
-            // handler 类必须被 Spring 管理
-            if (!applicationContext.containsBeanDefinition(handlerClazz.getName())
-                    && applicationContext.getBeansOfType(handlerClazz).isEmpty()) {
-                return;
-            }
+        Set<Class<?>> handlerClasses = ClassScanner.builder()
+            .basePackages(handlerPackages)
+            .onlySpringBeans(applicationContext)
+            .scan();
+        for (Class<?> handlerClazz : handlerClasses) {
             Object bean = applicationContext.getBean(handlerClazz);
             for (Method method : handlerClazz.getDeclaredMethods()) {
                 // 过滤出满足条件的消息接收器
                 if (!isHandleMethod(method, defaultMessageClazz)) {
                     continue;
                 }
-                method.setAccessible(true);
-
+                MethodHandle mh = ClassScanner.bindBean(bean, method);
                 Class<?>[] paramTypes = method.getParameterTypes();
                 Class messageClazz = paramTypes[1];
                 int msgId = parser.messageId(messageClazz);
 
-                MethodHandles.Lookup lookup = MethodHandles.lookup();
-                MethodHandle mh;
-                try {
-                    mh = lookup.unreflect(method).bindTo(bean);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
                 // 接收器方法绑定 ContextHandle
                 IContextHandle contextHandle = method.getReturnType() == void.class ?
-                        (ctx, req) -> {
-                            mh.invoke(ctx, req);
-                            return null;
-                        } : mh::invoke;
+                    (ctx, req) -> {
+                        mh.invoke(ctx, req);
+                        return null;
+                    } : mh::invoke;
                 // 注册方法接收器 IContextHandle
                 messagePool.register(msgId, contextHandle);
                 log.info("Registering handler, msgId: {}, className : {}, Method: {}", msgId, handlerClazz.getName(), method.getName());
@@ -116,28 +94,6 @@ public class MessageHandlerRegistrar implements SmartInitializingSingleton,
             return null;
         }
         return anno;
-    }
-
-    private Set<Class<?>> scanClasses(String[] packages) {
-        return scanClasses(packages, Object.class);
-    }
-
-    private Set<Class<?>> scanClasses(String[] packages, Class<?> superType) {
-        Set<Class<?>> classes = new HashSet<>();
-        ClassPathScanningCandidateComponentProvider scanner =
-                new ClassPathScanningCandidateComponentProvider(false);
-        scanner.setResourceLoader(resourceLoader);
-        scanner.addIncludeFilter(new AssignableTypeFilter(superType));
-        for (String packageName : packages) {
-            for (BeanDefinition bd : scanner.findCandidateComponents(packageName)) {
-                try {
-                    classes.add(Class.forName(bd.getBeanClassName()));
-                } catch (ClassNotFoundException e) {
-                    throw new IllegalStateException("Cannot load class " + bd.getBeanClassName(), e);
-                }
-            }
-        }
-        return classes;
     }
 
     private boolean isHandleMethod(Method method, Class<?> defaultMessageClazz) {
