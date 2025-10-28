@@ -1,27 +1,37 @@
 package com.game.vanta.persistent;
 
+import com.game.vanta.common.scanner.ClassScanner;
+import com.game.vanta.persistent.config.PersistentProperties;
 import com.game.vanta.persistent.dao.IPersistent;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.context.ApplicationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.Set;
 
-@Component
 public class PersistentPool {
+
+    private static final Logger log = LoggerFactory.getLogger(PersistentPool.class);
 
     private final BiMap<String, Class<? extends IPersistent>> persistentPool = HashBiMap.create();
 
     @SuppressWarnings("unchecked")
-    public PersistentPool(ApplicationContext context, MongoTemplate mongoTemplate) {
-        Map<String, IPersistent> beans = context.getBeansOfType(IPersistent.class);
-        for (IPersistent persistent : beans.values()) {
-            Class<? extends IPersistent> clazz = (Class<? extends IPersistent>) AopUtils.getTargetClass(persistent);
-            String collectionName = mongoTemplate.getCollectionName(clazz);
-            persistentPool.put(collectionName, clazz);
+    public PersistentPool(PersistentProperties persistentProperties, MongoTemplate mongoTemplate) {
+        String persistentEntityPackages = persistentProperties.getPersistentEntityPackages();
+        if (persistentEntityPackages == null || persistentEntityPackages.isEmpty() || persistentEntityPackages.isBlank()) {
+            log.warn("Persistent entity packages is not configured.");
+            return;
+        }
+        Set<Class<?>> persistentClasses = ClassScanner.builder()
+            .basePackages(persistentEntityPackages)
+            .bySuperType(IPersistent.class)
+            .scan();
+        for (Class<?> clazz : persistentClasses) {
+            Class<? extends IPersistent> persistentClazz = (Class<? extends IPersistent>) clazz;
+            String collectionName = mongoTemplate.getCollectionName(persistentClazz);
+            persistentPool.put(collectionName, persistentClazz);
         }
     }
 

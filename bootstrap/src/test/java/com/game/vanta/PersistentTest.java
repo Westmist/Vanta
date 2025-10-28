@@ -11,8 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.TestPropertySource;
+import org.vanta.game.BootstrapApplication;
 
-@TestPropertySource(properties = "network.enabled=false")
+@TestPropertySource(properties = {
+    "network.enabled=false",
+    "spring.cloud.service-registry.auto-registration.enabled=false"
+})
 @SpringBootTest(
     classes = {
         NetworkAutoConfiguration.class,

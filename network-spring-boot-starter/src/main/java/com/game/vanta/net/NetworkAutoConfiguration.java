@@ -43,20 +43,21 @@ public class NetworkAutoConfiguration {
     @ConditionalOnBean(BusinessHandlerProvider.class)
     @ConditionalOnMissingBean(ChannelInitializerProvider.class)
     public ChannelInitializerProvider channelInitializerProvider(
-            IMessagePool<?> iMessagePool,
-            BusinessHandlerProvider handlerProvider) {
+        IMessagePool<?> iMessagePool,
+        BusinessHandlerProvider handlerProvider) {
         return new DefaultChannelInitializer(iMessagePool, handlerProvider);
     }
 
     @ConditionalOnMissingBean(INetworkServer.class)
     @ConditionalOnBean(ChannelInitializerProvider.class)
     @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnProperty(name = "network.enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(value = "network.enabled", matchIfMissing = true)
     public NettyServer nettyServer(
-            NetworkProperties networkProperties,
-            NettyProperties nettyProperties,
-            ChannelInitializerProvider initializerProvider) {
-        return new NettyServer(networkProperties, nettyProperties, initializerProvider);
+        NetworkProperties networkProperties,
+        NettyProperties nettyProperties,
+        ChannelInitializerProvider initializerProvider,
+        ApplicationContext applicationContext) {
+        return new NettyServer(networkProperties, nettyProperties, initializerProvider, applicationContext);
     }
 
 }

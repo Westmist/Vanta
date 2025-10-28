@@ -2,10 +2,17 @@ spring:
     application:
         name: vanta-bootstrap
     config:
-        import: optional:nacos:bootstrap_1.yaml,classpath:fallback.yaml
+        import:
+            - optional:nacos:bootstrap_1.yaml
     cloud:
         nacos:
+            serverAddr: 127.0.0.1:8848
             config:
-                server-addr: 127.0.0.1:8848
                 namespace: vanta
                 group: TEST_GROUP
+            discovery:
+                namespace: vanta
+                group: TEST_GROUP
+                metadata:
+                    zone-id: s1
+                port: ${network.port}

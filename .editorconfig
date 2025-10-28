@@ -1,11 +1,31 @@
+# =========================
 # 顶层 EditorConfig 文件
+# =========================
 root = true
 
-# 通用缩进与编码规范
-[*.{java,md,groovy,xml,yml,yaml,properties}]
-indent_style = space
-indent_size = 4
-end_of_line = lf
+# -------------------------
+# 通用全文件配置
+# -------------------------
+[*]
 charset = utf-8
-trim_trailing_whitespace = true
+end_of_line = lf
 insert_final_newline = true
+trim_trailing_whitespace = true
+indent_size = 4
+
+# -------------------------
+# 代码文件（Java, XML, YAML 等）统一缩进
+# -------------------------
+[*.{java,groovy,xml,md,properties}]
+indent_style = space
+
+[*.{yml,yaml}]
+indent_style = space
+
+# -------------------------
+# Windows 批处理文件
+# -------------------------
+[*.{cmd,bat}]
+indent_style = space
+end_of_line = crlf
+trim_trailing_whitespace = false # 批处理文件空格敏感，不能自动去掉行尾空格

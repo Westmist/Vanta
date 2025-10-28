@@ -1,16 +1,20 @@
 package com.game.vanta;
 
 
-import com.game.vanta.event.PlayerLogin;
-import com.game.vanta.event.PlayerLogout;
+import org.vanta.game.event.PlayerLogin;
+import org.vanta.game.event.PlayerLogout;
 import com.game.vanta.redis.eventbus.pubsub.RedisEventPublisher;
 import com.game.vanta.redis.eventbus.pubsub.RedisEventSubscriber;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.vanta.game.BootstrapApplication;
 
-@TestPropertySource(properties = "network.enabled=false")
+@TestPropertySource(properties = {
+    "network.enabled=false",
+    "spring.cloud.service-registry.auto-registration.enabled=false"
+})
 @SpringBootTest(
     classes = {
         BootstrapApplication.class

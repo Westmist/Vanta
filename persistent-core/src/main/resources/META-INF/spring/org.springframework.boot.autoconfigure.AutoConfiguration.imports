@@ -1,0 +1,2 @@
+com.game.vanta.persistent.config.PersistentAutoConfiguration
+com.game.vanta.persistent.config.PersistentCheckerAutoConfiguration

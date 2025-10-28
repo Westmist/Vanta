@@ -14,7 +14,6 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 
-@Component
 public class PersistentMessageProducer {
 
     private static final Logger log = LoggerFactory.getLogger(PersistentMessageProducer.class);

@@ -64,6 +64,7 @@
         <module>proto-message</module>
         <module>vanta-common</module>
         <module>redis-eventbus</module>
+        <module>service-registry</module>
     </modules>
 
     <build>

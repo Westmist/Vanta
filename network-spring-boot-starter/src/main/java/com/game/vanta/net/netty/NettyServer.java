@@ -1,8 +1,10 @@
 package com.game.vanta.net.netty;
 
+import com.game.vanta.common.event.NetworkStartedEvent;
 import com.game.vanta.net.INetworkServer;
 import com.game.vanta.net.NetworkProperties;
 import com.game.vanta.net.handler.ChannelInitializerProvider;
+import org.springframework.context.ApplicationEventPublisher;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -22,6 +24,8 @@ public class NettyServer implements INetworkServer {
 
     private final ChannelInitializerProvider initializerProvider;
 
+    private final ApplicationEventPublisher publisher;
+
     private Channel serverChannel;
 
     private EventLoopGroup bossGroup;
@@ -30,10 +34,12 @@ public class NettyServer implements INetworkServer {
 
     public NettyServer(NetworkProperties networkProperties,
                        NettyProperties nettyProperties,
-                       ChannelInitializerProvider initializerProvider) {
+                       ChannelInitializerProvider initializerProvider,
+                       ApplicationEventPublisher publisher) {
         this.networkProperties = networkProperties;
         this.nettyProperties = nettyProperties;
         this.initializerProvider = initializerProvider;
+        this.publisher = publisher;
     }
 
     private WriteBufferWaterMark writeBufferWaterMark() {
@@ -59,6 +65,7 @@ public class NettyServer implements INetworkServer {
             ChannelFuture channelFuture = bootstrap.bind(networkProperties.getPort()).sync();
             this.serverChannel = channelFuture.channel();
             log.info("Netty started at port {}", networkProperties.getPort());
+            publisher.publishEvent(new NetworkStartedEvent(this));
         } catch (Exception e) {
             log.error("Netty server start failed on port {}", networkProperties.getPort(), e);
             stop();

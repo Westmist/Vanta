@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="BootstrapApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
     <module name="bootstrap" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.game.vanta.BootstrapApplication" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.vanta.game.BootstrapApplication" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.game.vanta.*" />
+        <option name="PATTERN" value="org.vanta.game.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
