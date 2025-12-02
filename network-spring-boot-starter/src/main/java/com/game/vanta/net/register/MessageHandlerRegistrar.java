@@ -32,6 +32,7 @@ public class MessageHandlerRegistrar implements SmartInitializingSingleton {
     public void afterSingletonsInstantiated() {
         EnableMessageHandlerScan scanAnno = findScanAnno();
         if (scanAnno == null) {
+            log.warn("Message handler scanning is disabled because @EnableMessageHandlerScan is not present.");
             return;
         }
         IMessagePool<?> messagePool = applicationContext.getBean(IMessagePool.class);

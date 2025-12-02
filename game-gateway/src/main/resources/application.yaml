@@ -1,9 +1,9 @@
 spring:
     application:
-        name: vanta-persistent
+        name: vanta-gateway
     config:
         import:
-            - optional:nacos:persistent.yaml
+            - optional:nacos:gateway.yaml
     cloud:
         nacos:
             serverAddr: 127.0.0.1:8848
@@ -13,4 +13,4 @@ spring:
             discovery:
                 namespace: vanta
                 group: TEST_GROUP
-                port: 8848
+                port: ${network.port}

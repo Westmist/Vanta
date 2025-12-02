@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 /**
- * 消息解码器
+ * 消息解码器     长度:4   +   消息ID:4   +  sequence:4  +  主体数据:n
  * 消息结构 +----------+ | 总长度 | +----------+ | 消息ID | +----------+ | 主体数据 |
  * +----------+ 总长度 = 4(长度标示) + 4(消息ID) + 主体数据
  */

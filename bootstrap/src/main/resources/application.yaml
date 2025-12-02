@@ -1,9 +1,9 @@
 spring:
     application:
-        name: vanta-bootstrap
+        name: vanta-game
     config:
         import:
-            - optional:nacos:bootstrap_1.yaml
+            - optional:nacos:game.yaml
     cloud:
         nacos:
             serverAddr: 127.0.0.1:8848
