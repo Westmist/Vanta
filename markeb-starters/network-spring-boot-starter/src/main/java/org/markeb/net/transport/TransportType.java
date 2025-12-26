@@ -13,6 +13,11 @@ public enum TransportType {
     /**
      * KCP 传输协议（可靠 UDP）
      */
-    KCP
+    KCP,
+
+    /**
+     * WebSocket 传输协议
+     */
+    WEBSOCKET
 }
 

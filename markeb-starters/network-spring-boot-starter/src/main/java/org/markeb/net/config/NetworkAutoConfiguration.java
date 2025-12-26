@@ -16,8 +16,12 @@ import org.markeb.net.transport.TransportServer;
 import org.markeb.net.transport.TransportType;
 import org.markeb.net.transport.kcp.KcpTransportServer;
 import org.markeb.net.transport.tcp.TcpTransportServer;
+import org.markeb.net.transport.websocket.WebSocketServerInitializer;
+import org.markeb.net.transport.websocket.WebSocketTransportServer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +30,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -118,7 +124,8 @@ public class NetworkAutoConfiguration {
     @ConditionalOnMissingBean({TransportServer.class, INetworkServer.class})
     public TransportServer transportServer(
             NetworkProperties properties,
-            ChannelInitializer<SocketChannel> channelInitializer) {
+            ChannelInitializer<SocketChannel> channelInitializer,
+            MessageDispatcher messageDispatcher) {
 
         TransportType transportType = properties.getTransport();
         int port = properties.getPort();
@@ -136,7 +143,73 @@ public class NetworkAutoConfiguration {
                     port,
                     nettyConfig.getWorkerThreads(),
                     channelInitializer);
+            case WEBSOCKET -> createWebSocketServer(properties, messageDispatcher);
         };
+    }
+
+    /**
+     * 创建 WebSocket 服务器
+     */
+    private TransportServer createWebSocketServer(NetworkProperties properties, MessageDispatcher messageDispatcher) {
+        NetworkProperties.WebSocketConfig wsConfig = properties.getWebsocket();
+        NetworkProperties.NettyConfig nettyConfig = properties.getNetty();
+
+        // 构建 SSL 上下文（如果启用）
+        SslContext sslContext = null;
+        if (wsConfig.isSslEnabled()) {
+            sslContext = buildSslContext(wsConfig);
+        }
+
+        // 构建 WebSocket 初始化器
+        WebSocketServerInitializer initializer = WebSocketServerInitializer.builder()
+                .sslContext(sslContext)
+                .websocketPath(wsConfig.getPath())
+                .maxFrameSize(wsConfig.getMaxFrameSize())
+                .enableCompression(wsConfig.isEnableCompression())
+                .readerIdleTime(nettyConfig.getReaderIdleTime())
+                .writerIdleTime(nettyConfig.getWriterIdleTime())
+                .allIdleTime(nettyConfig.getAllIdleTime())
+                .protocolType(properties.getProtocol())
+                .maxFrameLength(properties.getMaxFrameLength())
+                .messageDispatcher(messageDispatcher)
+                .build();
+
+        return new WebSocketTransportServer(
+                properties.getPort(),
+                nettyConfig.getBossThreads(),
+                nettyConfig.getWorkerThreads(),
+                initializer);
+    }
+
+    /**
+     * 构建 SSL 上下文
+     */
+    private SslContext buildSslContext(NetworkProperties.WebSocketConfig wsConfig) {
+        try {
+            if (!StringUtils.hasText(wsConfig.getSslCertPath()) || !StringUtils.hasText(wsConfig.getSslKeyPath())) {
+                log.warn("SSL enabled but certificate or key path not configured, SSL will be disabled");
+                return null;
+            }
+
+            File certFile = new File(wsConfig.getSslCertPath());
+            File keyFile = new File(wsConfig.getSslKeyPath());
+
+            if (!certFile.exists() || !keyFile.exists()) {
+                log.warn("SSL certificate or key file not found, SSL will be disabled");
+                return null;
+            }
+
+            SslContextBuilder builder = SslContextBuilder.forServer(certFile, keyFile);
+            if (StringUtils.hasText(wsConfig.getSslKeyPassword())) {
+                builder = SslContextBuilder.forServer(certFile, keyFile, wsConfig.getSslKeyPassword());
+            }
+
+            log.info("SSL context created for WebSocket server");
+            return builder.build();
+        } catch (Exception e) {
+            log.error("Failed to create SSL context", e);
+            return null;
+        }
     }
 }
 

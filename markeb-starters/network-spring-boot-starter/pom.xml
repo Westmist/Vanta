@@ -51,6 +51,12 @@
             <artifactId>netty-handler</artifactId>
         </dependency>
 
+        <!-- Netty HTTP/WebSocket -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+        </dependency>
+
         <!-- Protobuf (optional) -->
         <dependency>
             <groupId>com.google.protobuf</groupId>

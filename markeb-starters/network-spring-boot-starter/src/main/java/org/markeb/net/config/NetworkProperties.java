@@ -111,5 +111,53 @@ public class NetworkProperties {
          */
         private boolean enabled = false;
     }
+
+    /**
+     * WebSocket 特定配置
+     */
+    private WebSocketConfig websocket = new WebSocketConfig();
+
+    @Data
+    public static class WebSocketConfig {
+        /**
+         * WebSocket 路径
+         */
+        private String path = "/ws";
+
+        /**
+         * 最大帧大小（字节）
+         */
+        private int maxFrameSize = 65536;
+
+        /**
+         * 是否启用压缩
+         */
+        private boolean enableCompression = true;
+
+        /**
+         * 是否启用 SSL
+         */
+        private boolean sslEnabled = false;
+
+        /**
+         * SSL 证书路径
+         */
+        private String sslCertPath;
+
+        /**
+         * SSL 私钥路径
+         */
+        private String sslKeyPath;
+
+        /**
+         * SSL 私钥密码
+         */
+        private String sslKeyPassword;
+
+        /**
+         * 子协议（可选）
+         */
+        private String subprotocols;
+    }
 }
 
