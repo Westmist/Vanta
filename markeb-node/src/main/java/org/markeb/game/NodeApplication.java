@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableMessageHandlerScan(
         handlerPackages = "org.markeb.game.handler",
         messagePackages = "org.markeb.proto")
-public class BootstrapApplication {
+public class NodeApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BootstrapApplication.class, args);
+        SpringApplication.run(NodeApplication.class, args);
     }
 
 }

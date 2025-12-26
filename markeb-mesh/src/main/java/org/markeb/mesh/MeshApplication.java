@@ -13,10 +13,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 5. 其他无状态服务
  */
 @SpringBootApplication
-public class MarkebMeshApplication {
+public class MeshApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MarkebMeshApplication.class, args);
+        SpringApplication.run(MeshApplication.class, args);
     }
 
 }
