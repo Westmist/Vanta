@@ -25,7 +25,7 @@ markeb:
   # service registry config
   registry:
     enabled: true
-    # auto-register: false  # 可选：设为 false 则 gateway 只用于服务发现，不注册自身
+    # auto-register: false  # optional: set to false if gateway only for service discovery, not register itself
     type: NACOS
     # serviceName and port auto get from spring.application.name and markeb.network.port
     weight: 1.0

@@ -5,14 +5,14 @@ spring:
     redis:
       url: redis://127.0.0.1:6379
 
-# 网络配置（TCP 端口）
+# Network configuration (TCP port)
 network:
   enabled: true
   port: 9000
 
-# markeb 配置
+# markeb configuration
 markeb:
-  # 服务注册配置
+  # Service registry configuration
   registry:
     enabled: true
     type: NACOS
@@ -25,18 +25,18 @@ markeb:
     nacos:
       server-addr: localhost:8848
 
-  # 事件总线
+  # Event bus
   eventbus:
     enabled: true
     type: REDIS
 
-  # RPC 传输（供 node 调用）
+  # RPC transport (for node calls)
   transport:
     enabled: true
     type: GRPC
     server:
       enabled: true
-      port: 9001  # gRPC 端口
+      port: 9001  # gRPC port
     client:
       enabled: false
 
