@@ -1,0 +1,30 @@
+syntax = "proto3";
+option java_package = "org.markeb.proto.message";
+import "options.proto";
+
+// Test Request
+message ReqTestMessage {
+
+    option (msgId) = 10001;
+
+    int32 id = 1;
+
+    string name = 2;
+
+}
+
+// Test Response
+message ResTestMessage {
+
+    option (msgId) = 10002;
+
+    bool result = 1;
+
+}
+
+// Empty Message Test
+message ReqTestVoidMessage {
+
+    option (msgId) = 10003;
+
+}

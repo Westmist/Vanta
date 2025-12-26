@@ -1,0 +1,42 @@
+syntax = "proto3";
+option java_package = "org.markeb.proto.message";
+import "options.proto";
+
+// Login Request
+message ReqLoginMessage {
+
+    option (msgId) = 11000;
+
+    // Third-party account
+    string openId = 1;
+
+    // Login verification token
+    string token = 2;
+
+}
+
+// Login Response
+message ResLoginMessage {
+
+    option (msgId) = 11001;
+
+    // Third-party account
+    string openId = 1;
+
+    // Success flag
+    bool success = 2;
+
+}
+
+// Role Basic Info
+message ResRoleBasicInfoMessage {
+
+    option (msgId) = 11002;
+
+    string roleId = 1;
+
+    string name = 2;
+
+    int32 level = 3;
+
+}

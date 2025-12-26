@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+option java_package = "org.markeb.proto.notice";
+
+extend google.protobuf.MessageOptions {
+  int32 noticeId = 20000;
+}

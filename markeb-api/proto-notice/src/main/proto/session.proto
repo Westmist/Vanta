@@ -1,0 +1,39 @@
+syntax = "proto3";
+option java_package = "org.markeb.proto.notice";
+import "options.proto";
+
+// Session Bind Notice - Node -> Gateway
+message SessionBindNotice {
+
+    option (noticeId) = 20101;
+
+    // Player ID
+    string playerId = 1;
+
+    // Node ID
+    string nodeId = 2;
+
+}
+
+// Session Unbind Notice - Node -> Gateway
+message SessionUnbindNotice {
+
+    option (noticeId) = 20102;
+
+    // Player ID
+    string playerId = 1;
+
+}
+
+// Kick Player Notice - Node -> Gateway
+message KickPlayerNotice {
+
+    option (noticeId) = 20103;
+
+    // Player ID
+    string playerId = 1;
+
+    // Kick reason
+    string reason = 2;
+
+}

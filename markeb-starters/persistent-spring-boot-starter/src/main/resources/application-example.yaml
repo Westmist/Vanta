@@ -1,0 +1,52 @@
+# Persistent Spring Boot Starter 配置示例
+# 将此配置复制到你的应用 application.yaml 中
+
+markeb:
+  persistent:
+    enabled: true
+
+    # 实体扫描包路径（多个包用逗号分隔）
+    entity-packages: org.markeb.entity
+
+    # 数据库配置
+    storage:
+      type: mongo          # mongo / jpa
+
+    # 缓存配置
+    cache:
+      type: redis          # redis / caffeine / two-level / none
+      redis:
+        key-prefix: "game:"
+        default-ttl: 30m
+      caffeine:
+        max-size: 10000
+        expire-after-write: 5m
+
+    # 异步持久化队列配置
+    queue:
+      type: rocketmq       # rocketmq / kafka / memory
+      topic: persistent-topic
+      async-enabled: true
+      # 仅 memory 类型有效
+      memory-queue-capacity: 10000
+      consumer-threads: 4
+
+# MongoDB 配置（当 storage.type=mongo 时需要）
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/gamedb
+
+# Redis 配置（当 cache.type=redis 或 two-level 时需要）
+  redis:
+    host: localhost
+    port: 6379
+
+# RocketMQ 配置（当 queue.type=rocketmq 时需要）
+rocketmq:
+  name-server: localhost:9876
+  producer:
+    group: persistent-producer-group
+  consumer:
+    group: persistent-consumer-group
+

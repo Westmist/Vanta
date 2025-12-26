@@ -1,0 +1,17 @@
+# Luban 工具（不纳入版本控制）
+luban/Luban.dll
+luban/Luban.jar
+luban/*.exe
+luban/lib/
+
+# 保留配置文件
+!luban/luban.conf
+!luban/luban.conf.example
+!luban/.gitkeep
+
+# 生成的代码和数据（可选择是否纳入版本控制）
+# 如果希望生成的代码纳入版本控制，注释掉下面两行
+# src/main/java/com/game/vanta/meta/gen/beans/
+# src/main/java/com/game/vanta/meta/gen/tables/
+# src/main/resources/meta/*.bytes
+

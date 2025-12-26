@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: markeb-gateway
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+# markeb network config
+markeb:
+  network:
+    enabled: false  # gateway uses its own GatewayServer, disable common network module
+
+  # gateway config
+  gateway:
+    port: 7000
+    worker-threads: 8
+    read-idle-timeout: 120
+    max-connections: 10000
+    route-strategy: ROUND_ROBIN
+    # static node config (when not using service registry)
+    nodes:
+      node-1: 127.0.0.1:8000
+
+  # service registry config
+  registry:
+    enabled: true
+    type: NACOS
+    # serviceName and port auto get from spring.application.name and markeb.network.port
+    weight: 1.0
+    metadata:
+      version: "1.0.0"
+      type: gateway
+    nacos:
+      server-addr: 127.0.0.1:8848
+      namespace: public
+      group: DEFAULT_GROUP
+
+  # player locate service
+  locate:
+    enabled: true
+    type: REDIS
+    expire-time: 30m
+    heartbeat-interval: 30s
+
+# backend zone mapping config
+gateway:
+  backend:
+    zones:
+      zone1: 127.0.0.1:8000
+
+logging:
+  level:
+    root: INFO
+    org.markeb: DEBUG

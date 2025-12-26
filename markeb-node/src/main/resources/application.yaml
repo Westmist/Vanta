@@ -1,0 +1,107 @@
+spring:
+  application:
+    name: markeb-node
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://127.0.0.1:27017/markeb
+      database: markeb
+
+# RocketMQ configuration
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: persistent-producer-group
+    send-message-timeout: 3000
+
+# markeb configuration
+markeb:
+  # Network configuration
+  network:
+    enabled: true
+    port: 8000
+    transport: TCP
+    protocol: GATEWAY
+    codec: PROTOBUF
+    max-frame-length: 1048576  # 1MB
+    netty:
+      boss-threads: 1
+      worker-threads: 8
+      reader-idle-time: 60
+      writer-idle-time: 0
+      all-idle-time: 0
+    game-server:
+      enabled: true
+
+  # Service registry configuration
+  registry:
+    enabled: true
+    type: NACOS
+    weight: 1.0
+    metadata:
+      version: "1.0.0"
+      type: game-node
+    nacos:
+      server-addr: 127.0.0.1:8848
+      namespace: public
+      group: DEFAULT_GROUP
+
+  # Player locate service
+  locate:
+    enabled: true
+    type: REDIS
+    expire-time: 30m
+    heartbeat-interval: 30s
+
+  # Actor configuration
+  actor:
+    enabled: true
+    executor-type: VIRTUAL
+    default-mailbox-capacity: 0
+    shutdown-timeout-ms: 30000
+
+  # Persistent configuration
+  persistent:
+    enabled: true
+    storage:
+      type: MONGO
+    cache:
+      type: REDIS
+      redis:
+        key-prefix: "persistent:"
+        default-ttl: 30m
+    queue:
+      type: MEMORY
+      topic: persistent-topic
+      async-enabled: true
+      memory:
+        capacity: 10000
+
+  # EventBus configuration
+  eventbus:
+    enabled: true
+    type: REDIS
+    handler-packages:
+      - org.markeb.game.event.handler
+    redis:
+      topics:
+        - "player:*"
+
+  # RPC transport configuration
+  transport:
+    enabled: true
+    type: GRPC
+    server:
+      enabled: true
+      port: 9090
+    client:
+      enabled: true
+      timeout: 5000
+
+logging:
+  level:
+    root: INFO
+    org.markeb: DEBUG

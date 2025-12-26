@@ -1,0 +1,48 @@
+syntax = "proto3";
+option java_package = "org.markeb.proto.notice";
+import "options.proto";
+
+// Forward Notice - Gateway -> Node
+message ForwardNotice {
+
+    option (noticeId) = 20001;
+
+    // Player ID
+    string playerId = 1;
+
+    // Original message ID
+    int32 msgId = 2;
+
+    // Original message payload
+    bytes payload = 3;
+
+}
+
+// Push Notice - Node -> Gateway
+message PushNotice {
+
+    option (noticeId) = 20002;
+
+    // Target player ID list
+    repeated string playerIds = 1;
+
+    // Message ID
+    int32 msgId = 2;
+
+    // Message payload
+    bytes payload = 3;
+
+}
+
+// Broadcast Notice - Node -> Gateway
+message BroadcastNotice {
+
+    option (noticeId) = 20003;
+
+    // Message ID
+    int32 msgId = 1;
+
+    // Message payload
+    bytes payload = 2;
+
+}

@@ -1,0 +1,32 @@
+# Luban 配置文件示例
+# 复制此文件为 luban.conf 并根据实际情况修改
+
+# 定义根目录
+schemaCollector.rootDir = ../excel
+dataCollector.rootDir = ../excel
+
+# 导入所有 Excel 文件
+schemaCollector.files = [
+    "**/*.xlsx"
+]
+
+# 定义表
+tables = [
+    {
+        inputFiles = ["item.xlsx"],
+        tableName = "TbItem",
+        mode = "map",
+        keyName = "id"
+    },
+    {
+        inputFiles = ["skill.xlsx"],
+        tableName = "TbSkill", 
+        mode = "map",
+        keyName = "id"
+    }
+]
+
+# Java 代码生成选项
+java.namespace = com.game.vanta.meta.gen
+java.useRecords = false
+
