@@ -29,6 +29,13 @@ public class RegistryProperties {
     private boolean enabled = true;
 
     /**
+     * 是否自动注册服务到注册中心
+     * <p>设置为 false 时，只启用服务发现功能，不自动注册自身</p>
+     * <p>默认：true</p>
+     */
+    private boolean autoRegister = true;
+
+    /**
      * 注册中心类型
      * <p>默认：NACOS</p>
      */

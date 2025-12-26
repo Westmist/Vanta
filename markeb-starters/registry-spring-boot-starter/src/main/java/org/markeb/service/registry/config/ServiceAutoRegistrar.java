@@ -60,6 +60,11 @@ public class ServiceAutoRegistrar {
             return;
         }
 
+        if (!properties.isAutoRegister()) {
+            log.info("Auto registration is disabled, using registry for discovery only");
+            return;
+        }
+
         // 解析服务名称
         String serviceName = resolveServiceName();
         if (serviceName == null || serviceName.isEmpty()) {

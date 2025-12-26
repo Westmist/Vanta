@@ -35,6 +35,7 @@ List<ServiceInstance> instances = discovery.getInstances("user-service");
 | 配置 | 默认值 | 说明 |
 |------|--------|------|
 | `markeb.registry.enabled` | `true` | 是否启用 |
+| `markeb.registry.auto-register` | `true` | 是否自动注册自身（设为 false 只启用服务发现） |
 | `markeb.registry.type` | `NACOS` | 类型：NACOS/ETCD/CONSUL |
 | `markeb.registry.service-name` | 自动获取 | 服务名（默认取 spring.application.name） |
 | `markeb.registry.port` | 自动获取 | 端口（默认取 network.port） |
