@@ -66,14 +66,14 @@ public class PlatformThreadExecutor implements ActorExecutor {
     /**
      * 根据 Actor ID 计算分片索引
      */
-    private int getShardIndex(String actorId) {
-        int hash = actorId.hashCode();
-        // 确保非负
+    private int getShardIndex(long actorId) {
+        // 使用 Long.hashCode 计算哈希值，确保非负
+        int hash = Long.hashCode(actorId);
         return (hash & 0x7FFFFFFF) % parallelism;
     }
 
     @Override
-    public void execute(String actorId, Envelope envelope, Runnable task) {
+    public void execute(long actorId, Envelope envelope, Runnable task) {
         if (shutdown.get()) {
             log.warn("Executor is shutdown, rejecting task for actor: {}", actorId);
             return;
@@ -91,7 +91,7 @@ public class PlatformThreadExecutor implements ActorExecutor {
     }
 
     @Override
-    public void schedule(String actorId, Runnable task, long delayMs) {
+    public void schedule(long actorId, Runnable task, long delayMs) {
         if (shutdown.get()) {
             return;
         }
@@ -109,7 +109,7 @@ public class PlatformThreadExecutor implements ActorExecutor {
     }
 
     @Override
-    public String schedulePeriodic(String actorId, Runnable task, long initialDelayMs, long periodMs) {
+    public String schedulePeriodic(long actorId, Runnable task, long initialDelayMs, long periodMs) {
         if (shutdown.get()) {
             return null;
         }

@@ -4,18 +4,18 @@ import org.markeb.eventbus.Event;
 
 public class PlayerLogout implements Event {
 
-    private String playerId;
+    private long playerId;
 
     @Override
     public String topic() {
         return "player:logout";
     }
 
-    public String getPlayerId() {
+    public long getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(String playerId) {
+    public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }
 }

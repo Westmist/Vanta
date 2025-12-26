@@ -17,7 +17,7 @@ public interface ActorExecutor {
      * @param envelope 消息信封
      * @param task     处理任务
      */
-    void execute(String actorId, Envelope envelope, Runnable task);
+    void execute(long actorId, Envelope envelope, Runnable task);
 
     /**
      * 调度延迟任务
@@ -26,7 +26,7 @@ public interface ActorExecutor {
      * @param task    任务
      * @param delayMs 延迟毫秒数
      */
-    void schedule(String actorId, Runnable task, long delayMs);
+    void schedule(long actorId, Runnable task, long delayMs);
 
     /**
      * 调度周期性任务
@@ -37,7 +37,7 @@ public interface ActorExecutor {
      * @param periodMs       周期毫秒数
      * @return 调度任务 ID
      */
-    String schedulePeriodic(String actorId, Runnable task, long initialDelayMs, long periodMs);
+    String schedulePeriodic(long actorId, Runnable task, long initialDelayMs, long periodMs);
 
     /**
      * 取消周期性任务

@@ -7,6 +7,6 @@ public class ChannelAttributeKey {
 
 	public static final AttributeKey<Player> PLAYER_KEY = AttributeKey.valueOf("player");
 
-	public static final AttributeKey<String> PLAYER_ID_KEY = AttributeKey.valueOf("playerId");
+	public static final AttributeKey<Long> PLAYER_ID_KEY = AttributeKey.valueOf("playerId");
 
 }

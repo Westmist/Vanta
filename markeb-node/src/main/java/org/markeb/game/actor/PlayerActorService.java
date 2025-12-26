@@ -28,7 +28,7 @@ public class PlayerActorService {
 
     private final ActorSystem actorSystem;
     private final PlayerActorBehavior playerBehavior;
-    private final Map<String, Channel> playerChannels = new ConcurrentHashMap<>();
+    private final Map<Long, Channel> playerChannels = new ConcurrentHashMap<>();
 
     public PlayerActorService(ActorSystem actorSystem) {
         this.actorSystem = actorSystem;
@@ -42,7 +42,7 @@ public class PlayerActorService {
      * @param channel  连接通道
      * @return Actor 引用
      */
-    public ActorRef login(String playerId, Channel channel) {
+    public ActorRef login(long playerId, Channel channel) {
         // 检查是否已在线
         Optional<ActorRef> existing = actorSystem.lookup(playerId);
         if (existing.isPresent()) {
@@ -81,7 +81,7 @@ public class PlayerActorService {
      *
      * @param playerId 玩家 ID
      */
-    public void logout(String playerId) {
+    public void logout(long playerId) {
         // 发送停止消息
         actorSystem.tell(playerId, new SystemMessage.Stop());
 
@@ -109,7 +109,7 @@ public class PlayerActorService {
      * @param channel  通道
      * @return 是否成功发送
      */
-    public boolean handleMessage(String playerId, Object message, Channel channel) {
+    public boolean handleMessage(long playerId, Object message, Channel channel) {
         NetworkMessage<?> networkMessage = new NetworkMessage<>(message, channel);
         return actorSystem.tell(playerId, networkMessage);
     }
@@ -121,7 +121,7 @@ public class PlayerActorService {
      * @param message  消息
      * @return 是否成功
      */
-    public boolean tell(String playerId, Object message) {
+    public boolean tell(long playerId, Object message) {
         return actorSystem.tell(playerId, message);
     }
 
@@ -133,7 +133,7 @@ public class PlayerActorService {
      * @param <T>      响应类型
      * @return CompletableFuture
      */
-    public <T> CompletableFuture<T> ask(String playerId, Object message) {
+    public <T> CompletableFuture<T> ask(long playerId, Object message) {
         return actorSystem.ask(playerId, message);
     }
 
@@ -143,7 +143,7 @@ public class PlayerActorService {
      * @param playerId 玩家 ID
      * @return 是否在线
      */
-    public boolean isOnline(String playerId) {
+    public boolean isOnline(long playerId) {
         return actorSystem.lookup(playerId).isPresent();
     }
 
@@ -153,7 +153,7 @@ public class PlayerActorService {
      * @param playerId 玩家 ID
      * @return Channel
      */
-    public Optional<Channel> getChannel(String playerId) {
+    public Optional<Channel> getChannel(long playerId) {
         return Optional.ofNullable(playerChannels.get(playerId));
     }
 
@@ -163,7 +163,7 @@ public class PlayerActorService {
      * @param playerId 玩家 ID
      * @param message  消息
      */
-    public void sendToClient(String playerId, Object message) {
+    public void sendToClient(long playerId, Object message) {
         Channel channel = playerChannels.get(playerId);
         if (channel != null && channel.isActive()) {
             channel.writeAndFlush(message);

@@ -24,7 +24,7 @@ public class DefaultActorSystem implements ActorSystem {
     private final String name;
     private final ActorProperties properties;
     private final ActorExecutor executor;
-    private final Map<String, DefaultActor<?>> actors = new ConcurrentHashMap<>();
+    private final Map<Long, DefaultActor<?>> actors = new ConcurrentHashMap<>();
     private final AtomicBoolean shutdown = new AtomicBoolean(false);
 
     public DefaultActorSystem(String name, ActorProperties properties) {
@@ -42,12 +42,12 @@ public class DefaultActorSystem implements ActorSystem {
     }
 
     @Override
-    public <T> ActorRef spawn(String actorId, T initialState, ActorBehavior<T> behavior) {
+    public <T> ActorRef spawn(long actorId, T initialState, ActorBehavior<T> behavior) {
         return spawn(actorId, initialState, behavior, ActorConfig.defaults());
     }
 
     @Override
-    public <T> ActorRef spawn(String actorId, T initialState, ActorBehavior<T> behavior, ActorConfig config) {
+    public <T> ActorRef spawn(long actorId, T initialState, ActorBehavior<T> behavior, ActorConfig config) {
         if (shutdown.get()) {
             throw new IllegalStateException("ActorSystem is shutdown");
         }
@@ -63,7 +63,7 @@ public class DefaultActorSystem implements ActorSystem {
     }
 
     @Override
-    public Optional<ActorRef> lookup(String actorId) {
+    public Optional<ActorRef> lookup(long actorId) {
         DefaultActor<?> actor = actors.get(actorId);
         if (actor != null && !actor.isStopped()) {
             return Optional.of(actor);
@@ -72,7 +72,7 @@ public class DefaultActorSystem implements ActorSystem {
     }
 
     @Override
-    public <T> ActorRef getOrSpawn(String actorId, T initialState, ActorBehavior<T> behavior) {
+    public <T> ActorRef getOrSpawn(long actorId, T initialState, ActorBehavior<T> behavior) {
         return actors.computeIfAbsent(actorId, id -> {
             if (shutdown.get()) {
                 throw new IllegalStateException("ActorSystem is shutdown");
@@ -82,7 +82,7 @@ public class DefaultActorSystem implements ActorSystem {
     }
 
     @Override
-    public boolean stop(String actorId) {
+    public boolean stop(long actorId) {
         DefaultActor<?> actor = actors.get(actorId);
         if (actor != null) {
             actor.stop();
@@ -92,7 +92,7 @@ public class DefaultActorSystem implements ActorSystem {
     }
 
     @Override
-    public boolean tell(String actorId, Object message) {
+    public boolean tell(long actorId, Object message) {
         DefaultActor<?> actor = actors.get(actorId);
         if (actor != null && !actor.isStopped()) {
             actor.tell(message);
@@ -102,7 +102,7 @@ public class DefaultActorSystem implements ActorSystem {
     }
 
     @Override
-    public <T> CompletableFuture<T> ask(String actorId, Object message) {
+    public <T> CompletableFuture<T> ask(long actorId, Object message) {
         DefaultActor<?> actor = actors.get(actorId);
         if (actor != null && !actor.isStopped()) {
             return actor.ask(message);
@@ -147,7 +147,7 @@ public class DefaultActorSystem implements ActorSystem {
     /**
      * 当 Actor 停止时的回调
      */
-    void onActorStopped(String actorId) {
+    void onActorStopped(long actorId) {
         actors.remove(actorId);
         if (executor instanceof VirtualThreadExecutor vte) {
             vte.cleanupActor(actorId);
@@ -158,14 +158,14 @@ public class DefaultActorSystem implements ActorSystem {
     /**
      * 调度延迟消息
      */
-    void scheduleOnce(String actorId, Object message, long delayMs) {
+    void scheduleOnce(long actorId, Object message, long delayMs) {
         executor.schedule(actorId, () -> tell(actorId, message), delayMs);
     }
 
     /**
      * 调度周期性消息
      */
-    String schedulePeriodic(String actorId, Object message, long initialDelayMs, long periodMs) {
+    String schedulePeriodic(long actorId, Object message, long initialDelayMs, long periodMs) {
         return executor.schedulePeriodic(actorId, () -> tell(actorId, message), initialDelayMs, periodMs);
     }
 

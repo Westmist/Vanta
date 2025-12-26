@@ -16,7 +16,7 @@ public interface ActorRef {
      *
      * @return Actor ID
      */
-    String actorId();
+    long actorId();
 
     /**
      * 发送消息（Fire and Forget）

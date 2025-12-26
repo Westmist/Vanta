@@ -28,8 +28,8 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
     private static final Logger log = LoggerFactory.getLogger(PlayerActorManager.class);
 
     private final ActorSystem actorSystem;
-    private final Map<String, P> playerActors = new ConcurrentHashMap<>();
-    private final Function<String, P> playerFactory;
+    private final Map<Long, P> playerActors = new ConcurrentHashMap<>();
+    private final Function<Long, P> playerFactory;
     private final Function<P, S> initialStateFactory;
     private final ActorConfig actorConfig;
 
@@ -41,7 +41,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      * @param initialStateFactory 初始状态工厂（PlayerActor -> State）
      */
     public PlayerActorManager(ActorSystem actorSystem,
-                               Function<String, P> playerFactory,
+                               Function<Long, P> playerFactory,
                                Function<P, S> initialStateFactory) {
         this(actorSystem, playerFactory, initialStateFactory, ActorConfig.defaults());
     }
@@ -55,7 +55,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      * @param actorConfig         Actor 配置
      */
     public PlayerActorManager(ActorSystem actorSystem,
-                               Function<String, P> playerFactory,
+                               Function<Long, P> playerFactory,
                                Function<P, S> initialStateFactory,
                                ActorConfig actorConfig) {
         this.actorSystem = actorSystem;
@@ -71,7 +71,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      * @param channel  连接通道
      * @return 玩家 Actor
      */
-    public P login(String playerId, Channel channel) {
+    public P login(long playerId, Channel channel) {
         P existingPlayer = playerActors.get(playerId);
         if (existingPlayer != null) {
             // 踢掉旧连接
@@ -105,7 +105,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      *
      * @param playerId 玩家 ID
      */
-    public void logout(String playerId) {
+    public void logout(long playerId) {
         P player = playerActors.remove(playerId);
         if (player != null) {
             player.onLogout();
@@ -121,7 +121,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      * @param playerId 玩家 ID
      * @return 玩家 Actor
      */
-    public Optional<P> getPlayer(String playerId) {
+    public Optional<P> getPlayer(long playerId) {
         return Optional.ofNullable(playerActors.get(playerId));
     }
 
@@ -131,7 +131,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      * @param playerId 玩家 ID
      * @return 是否在线
      */
-    public boolean isOnline(String playerId) {
+    public boolean isOnline(long playerId) {
         return playerActors.containsKey(playerId);
     }
 
@@ -142,7 +142,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      * @param message  消息
      * @return 是否发送成功
      */
-    public boolean tell(String playerId, Object message) {
+    public boolean tell(long playerId, Object message) {
         return actorSystem.tell(playerId, message);
     }
 
@@ -154,7 +154,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      * @param <T>      响应类型
      * @return CompletableFuture
      */
-    public <T> CompletableFuture<T> ask(String playerId, Object message) {
+    public <T> CompletableFuture<T> ask(long playerId, Object message) {
         return actorSystem.ask(playerId, message);
     }
 
@@ -173,7 +173,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      * @param playerId 玩家 ID
      * @param message  消息
      */
-    public void sendToClient(String playerId, Object message) {
+    public void sendToClient(long playerId, Object message) {
         P player = playerActors.get(playerId);
         if (player != null) {
             player.sendToClient(message);
@@ -194,7 +194,7 @@ public class PlayerActorManager<P extends PlayerActor<S>, S> {
      *
      * @return 玩家 ID 集合
      */
-    public Iterable<String> getOnlinePlayerIds() {
+    public Iterable<Long> getOnlinePlayerIds() {
         return playerActors.keySet();
     }
 

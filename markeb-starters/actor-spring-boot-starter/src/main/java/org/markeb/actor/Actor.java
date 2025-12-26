@@ -21,7 +21,7 @@ public interface Actor {
      *
      * @return Actor 的唯一标识
      */
-    String actorId();
+    long actorId();
 
     /**
      * 向该 Actor 发送消息（Fire and Forget）

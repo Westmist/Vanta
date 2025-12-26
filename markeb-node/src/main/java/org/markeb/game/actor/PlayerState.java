@@ -9,7 +9,7 @@ package org.markeb.game.actor;
  */
 public class PlayerState {
 
-    private String playerId;
+    private long playerId;
     private String nickname;
     private int level;
     private long experience;
@@ -20,18 +20,18 @@ public class PlayerState {
     public PlayerState() {
     }
 
-    public PlayerState(String playerId) {
+    public PlayerState(long playerId) {
         this.playerId = playerId;
         this.level = 1;
         this.experience = 0;
         this.gold = 0;
     }
 
-    public String getPlayerId() {
+    public long getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(String playerId) {
+    public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }
 
@@ -111,7 +111,7 @@ public class PlayerState {
     @Override
     public String toString() {
         return "PlayerState{" +
-                "playerId='" + playerId + '\'' +
+                "playerId=" + playerId +
                 ", nickname='" + nickname + '\'' +
                 ", level=" + level +
                 ", experience=" + experience +

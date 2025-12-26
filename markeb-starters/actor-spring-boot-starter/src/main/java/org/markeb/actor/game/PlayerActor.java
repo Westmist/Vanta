@@ -14,40 +14,40 @@ import io.netty.channel.Channel;
  */
 public abstract class PlayerActor<S> extends GameActor<S> {
 
-    private String playerId;
-    private String accountId;
+    private long playerId;
+    private long accountId;
     private long loginTime;
     private long lastActiveTime;
 
-    protected PlayerActor(String actorId, ActorRef actorRef) {
+    protected PlayerActor(long actorId, ActorRef actorRef) {
         super(actorId, actorRef);
     }
 
     /**
      * 获取玩家 ID
      */
-    public String getPlayerId() {
+    public long getPlayerId() {
         return playerId;
     }
 
     /**
      * 设置玩家 ID
      */
-    public void setPlayerId(String playerId) {
+    public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }
 
     /**
      * 获取账号 ID
      */
-    public String getAccountId() {
+    public long getAccountId() {
         return accountId;
     }
 
     /**
      * 设置账号 ID
      */
-    public void setAccountId(String accountId) {
+    public void setAccountId(long accountId) {
         this.accountId = accountId;
     }
 

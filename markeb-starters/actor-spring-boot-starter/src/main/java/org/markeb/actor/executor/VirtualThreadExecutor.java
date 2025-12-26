@@ -22,7 +22,7 @@ public class VirtualThreadExecutor implements ActorExecutor {
 
     private final ExecutorService virtualExecutor;
     private final ScheduledExecutorService scheduler;
-    private final Map<String, Object> actorLocks = new ConcurrentHashMap<>();
+    private final Map<Long, Object> actorLocks = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
     private final AtomicBoolean shutdown = new AtomicBoolean(false);
 
@@ -38,7 +38,7 @@ public class VirtualThreadExecutor implements ActorExecutor {
     }
 
     @Override
-    public void execute(String actorId, Envelope envelope, Runnable task) {
+    public void execute(long actorId, Envelope envelope, Runnable task) {
         if (shutdown.get()) {
             log.warn("Executor is shutdown, rejecting task for actor: {}", actorId);
             return;
@@ -59,7 +59,7 @@ public class VirtualThreadExecutor implements ActorExecutor {
     }
 
     @Override
-    public void schedule(String actorId, Runnable task, long delayMs) {
+    public void schedule(long actorId, Runnable task, long delayMs) {
         if (shutdown.get()) {
             return;
         }
@@ -79,7 +79,7 @@ public class VirtualThreadExecutor implements ActorExecutor {
     }
 
     @Override
-    public String schedulePeriodic(String actorId, Runnable task, long initialDelayMs, long periodMs) {
+    public String schedulePeriodic(long actorId, Runnable task, long initialDelayMs, long periodMs) {
         if (shutdown.get()) {
             return null;
         }
@@ -144,7 +144,7 @@ public class VirtualThreadExecutor implements ActorExecutor {
     /**
      * 清理已停止 Actor 的锁
      */
-    public void cleanupActor(String actorId) {
+    public void cleanupActor(long actorId) {
         actorLocks.remove(actorId);
     }
 

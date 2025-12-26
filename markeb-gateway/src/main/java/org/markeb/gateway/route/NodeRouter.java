@@ -152,11 +152,11 @@ public class NodeRouter {
     /**
      * 一致性哈希选择
      */
-    private ServiceInstance selectByConsistentHash(List<ServiceInstance> nodes, String playerId) {
+    private ServiceInstance selectByConsistentHash(List<ServiceInstance> nodes, Long playerId) {
         if (playerId == null) {
             return selectByRoundRobin(nodes);
         }
-        int hash = Math.abs(playerId.hashCode());
+        int hash = Math.abs(Long.hashCode(playerId));
         int index = hash % nodes.size();
         return nodes.get(index);
     }
@@ -183,7 +183,7 @@ public class NodeRouter {
                 if (session.getPlayerId() == null) {
                     yield nodeIds.get(0);
                 }
-                int hash = Math.abs(session.getPlayerId().hashCode());
+                int hash = Math.abs(Long.hashCode(session.getPlayerId()));
                 yield nodeIds.get(hash % nodeIds.size());
             }
             case DESIGNATED -> nodeIds.get(0);

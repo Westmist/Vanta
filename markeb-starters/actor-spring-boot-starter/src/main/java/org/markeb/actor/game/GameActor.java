@@ -18,11 +18,11 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class GameActor<S> {
 
-    private final String actorId;
+    private final long actorId;
     private final ActorRef actorRef;
     private Channel channel;
 
-    protected GameActor(String actorId, ActorRef actorRef) {
+    protected GameActor(long actorId, ActorRef actorRef) {
         this.actorId = actorId;
         this.actorRef = actorRef;
     }
@@ -30,7 +30,7 @@ public abstract class GameActor<S> {
     /**
      * 获取 Actor ID
      */
-    public String getActorId() {
+    public long getActorId() {
         return actorId;
     }
 

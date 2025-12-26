@@ -19,7 +19,7 @@ public class GatewaySession {
     /**
      * 玩家ID（登录后绑定）
      */
-    private volatile String playerId;
+    private volatile Long playerId;
 
     /**
      * 绑定的区服/节点ID
@@ -62,11 +62,11 @@ public class GatewaySession {
         return sessionId;
     }
 
-    public String getPlayerId() {
+    public Long getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(String playerId) {
+    public void setPlayerId(Long playerId) {
         this.playerId = playerId;
     }
 
@@ -159,7 +159,7 @@ public class GatewaySession {
     public String toString() {
         return "GatewaySession{" +
                 "sessionId=" + sessionId +
-                ", playerId='" + playerId + '\'' +
+                ", playerId=" + playerId +
                 ", nodeId='" + nodeId + '\'' +
                 ", state=" + state +
                 '}';

@@ -22,7 +22,7 @@ public class DefaultActor<T> implements Actor, ActorRef {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultActor.class);
 
-    private final String actorId;
+    private final long actorId;
     private final ActorBehavior<T> behavior;
     private final ActorConfig config;
     private final Mailbox mailbox;
@@ -33,7 +33,7 @@ public class DefaultActor<T> implements Actor, ActorRef {
     private final AtomicBoolean stopped = new AtomicBoolean(false);
     private final AtomicBoolean processing = new AtomicBoolean(false);
 
-    public DefaultActor(String actorId,
+    public DefaultActor(long actorId,
                         T initialState,
                         ActorBehavior<T> behavior,
                         ActorConfig config,
@@ -57,7 +57,7 @@ public class DefaultActor<T> implements Actor, ActorRef {
     }
 
     @Override
-    public String actorId() {
+    public long actorId() {
         return actorId;
     }
 

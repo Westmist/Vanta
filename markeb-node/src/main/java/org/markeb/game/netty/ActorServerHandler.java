@@ -31,7 +31,7 @@ public class ActorServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Message msg) {
         Channel channel = ctx.channel();
-        String playerId = channel.attr(PLAYER_ID_KEY).get();
+        Long playerId = channel.attr(PLAYER_ID_KEY).get();
 
         if (playerId == null) {
             log.warn("Received message from unauthenticated channel: {}", channel.remoteAddress());
@@ -55,8 +55,8 @@ public class ActorServerHandler extends SimpleChannelInboundHandler<Message> {
     private void handleLoginMessage(ChannelHandlerContext ctx, Message msg) {
         // TODO: 实现登录逻辑，验证后创建玩家 Actor
         // 示例：假设第一条消息包含玩家 ID
-        String playerId = extractPlayerId(msg);
-        if (playerId != null) {
+        long playerId = extractPlayerId(msg);
+        if (playerId > 0) {
             Channel channel = ctx.channel();
 
             // 创建玩家 Actor
@@ -75,10 +75,10 @@ public class ActorServerHandler extends SimpleChannelInboundHandler<Message> {
     /**
      * 从消息中提取玩家 ID
      */
-    private String extractPlayerId(Message msg) {
+    private long extractPlayerId(Message msg) {
         // TODO: 根据实际的登录协议实现
         // 这里返回一个临时 ID 用于测试
-        return "player_" + System.currentTimeMillis();
+        return System.currentTimeMillis();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ActorServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
-        String playerId = channel.attr(PLAYER_ID_KEY).get();
+        Long playerId = channel.attr(PLAYER_ID_KEY).get();
 
         if (playerId != null) {
             // 通知玩家 Actor 下线
@@ -104,7 +104,7 @@ public class ActorServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         Channel channel = ctx.channel();
-        String playerId = channel.attr(PLAYER_ID_KEY).get();
+        Long playerId = channel.attr(PLAYER_ID_KEY).get();
         log.error("Connection exception for player {}: {}", playerId, channel.remoteAddress(), cause);
         ctx.close();
     }
@@ -113,7 +113,7 @@ public class ActorServerHandler extends SimpleChannelInboundHandler<Message> {
     public void channelWritabilityChanged(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         if (!channel.isWritable()) {
-            String playerId = channel.attr(PLAYER_ID_KEY).get();
+            Long playerId = channel.attr(PLAYER_ID_KEY).get();
             log.warn("Channel not writable for player {}", playerId);
         }
     }

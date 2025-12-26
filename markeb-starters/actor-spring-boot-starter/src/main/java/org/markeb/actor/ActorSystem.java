@@ -23,7 +23,7 @@ public interface ActorSystem {
      * @param <T>           状态类型
      * @return Actor 引用
      */
-    <T> ActorRef spawn(String actorId, T initialState, ActorBehavior<T> behavior);
+    <T> ActorRef spawn(long actorId, T initialState, ActorBehavior<T> behavior);
 
     /**
      * 使用自定义配置创建 Actor
@@ -35,7 +35,7 @@ public interface ActorSystem {
      * @param <T>           状态类型
      * @return Actor 引用
      */
-    <T> ActorRef spawn(String actorId, T initialState, ActorBehavior<T> behavior, ActorConfig config);
+    <T> ActorRef spawn(long actorId, T initialState, ActorBehavior<T> behavior, ActorConfig config);
 
     /**
      * 根据 ID 查找 Actor
@@ -43,7 +43,7 @@ public interface ActorSystem {
      * @param actorId Actor 唯一标识
      * @return Actor 引用，如果不存在返回 Optional.empty()
      */
-    Optional<ActorRef> lookup(String actorId);
+    Optional<ActorRef> lookup(long actorId);
 
     /**
      * 获取或创建 Actor
@@ -57,7 +57,7 @@ public interface ActorSystem {
      * @param <T>           状态类型
      * @return Actor 引用
      */
-    <T> ActorRef getOrSpawn(String actorId, T initialState, ActorBehavior<T> behavior);
+    <T> ActorRef getOrSpawn(long actorId, T initialState, ActorBehavior<T> behavior);
 
     /**
      * 停止指定的 Actor
@@ -65,7 +65,7 @@ public interface ActorSystem {
      * @param actorId Actor 唯一标识
      * @return 如果 Actor 存在并被停止返回 true
      */
-    boolean stop(String actorId);
+    boolean stop(long actorId);
 
     /**
      * 向指定 Actor 发送消息
@@ -77,7 +77,7 @@ public interface ActorSystem {
      * @param message 消息
      * @return 如果消息成功发送返回 true
      */
-    boolean tell(String actorId, Object message);
+    boolean tell(long actorId, Object message);
 
     /**
      * 向指定 Actor 发送消息并等待响应
@@ -87,7 +87,7 @@ public interface ActorSystem {
      * @param <T>     响应类型
      * @return CompletableFuture，如果 Actor 不存在则返回失败的 Future
      */
-    <T> CompletableFuture<T> ask(String actorId, Object message);
+    <T> CompletableFuture<T> ask(long actorId, Object message);
 
     /**
      * 获取当前 Actor 数量

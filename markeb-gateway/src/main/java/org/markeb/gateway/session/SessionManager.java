@@ -28,7 +28,7 @@ public class SessionManager {
     /**
      * playerId -> sessionId（用于通过玩家ID快速查找会话）
      */
-    private final Map<String, Integer> playerSessions = new ConcurrentHashMap<>();
+    private final Map<Long, Integer> playerSessions = new ConcurrentHashMap<>();
 
     /**
      * channelId -> sessionId
@@ -57,7 +57,7 @@ public class SessionManager {
     /**
      * 绑定玩家到会话
      */
-    public void bindPlayer(int sessionId, String playerId) {
+    public void bindPlayer(int sessionId, long playerId) {
         GatewaySession session = sessions.get(sessionId);
         if (session == null) {
             log.warn("Session not found: {}", sessionId);
@@ -114,7 +114,7 @@ public class SessionManager {
     /**
      * 通过玩家ID获取会话
      */
-    public Optional<GatewaySession> getSessionByPlayerId(String playerId) {
+    public Optional<GatewaySession> getSessionByPlayerId(long playerId) {
         Integer sessionId = playerSessions.get(playerId);
         if (sessionId == null) {
             return Optional.empty();
@@ -174,7 +174,7 @@ public class SessionManager {
     /**
      * 向指定玩家发送消息
      */
-    public boolean sendToPlayer(String playerId, Object msg) {
+    public boolean sendToPlayer(long playerId, Object msg) {
         return getSessionByPlayerId(playerId)
                 .filter(GatewaySession::isActive)
                 .map(session -> {
